@@ -1,8 +1,12 @@
-﻿namespace SchoolManagementSystem.Data.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SchoolManagementSystem.Data.Entities
 {
     public class Subject
     {
         public int SubjectId { get; set; }
+
+        [Required, MaxLength(100)]
         public string Name { get; set; }
 
         public ICollection<Course> Courses { get; set; } = new List<Course>();
