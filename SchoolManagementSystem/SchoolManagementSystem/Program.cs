@@ -1,3 +1,8 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using SchoolManagementSystem.Data;
+using SchoolManagementSystem.Data.Entities;
+
 namespace SchoolManagementSystem
 {
     public class Program
@@ -5,6 +10,16 @@ namespace SchoolManagementSystem
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddDbContext<DataContext>(config =>
+                config.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddIdentity<AppUser, IdentityRole>(config =>
+            {
+                config.SignIn.RequireConfirmedEmail = false;
+            })
+            .AddEntityFrameworkStores<DataContext>()
+            .AddDefaultTokenProviders(); 
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
