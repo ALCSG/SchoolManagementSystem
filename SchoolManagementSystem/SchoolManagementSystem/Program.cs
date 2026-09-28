@@ -11,15 +11,19 @@ namespace SchoolManagementSystem
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            var connectionString = builder.Configuration
+                .GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("DefaultConnection is missing.");
+
             builder.Services.AddDbContext<DataContext>(config =>
-                config.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                config.UseSqlServer(connectionString));
 
             builder.Services.AddIdentity<AppUser, IdentityRole>(config =>
             {
                 config.SignIn.RequireConfirmedEmail = false;
             })
             .AddEntityFrameworkStores<DataContext>()
-            .AddDefaultTokenProviders(); 
+            .AddDefaultTokenProviders();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
