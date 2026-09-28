@@ -11,6 +11,6 @@ namespace SchoolManagementSystem.Data.Entities
         [Required, MaxLength(50)]
         public string LastName { get; set; }
 
-        public string ProfilePicturePath { get; set; }  
+        public string? ProfilePicturePath { get; set; }  
     }
 }
