@@ -49,6 +49,9 @@ namespace SchoolManagementSystem
                 pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
 
+            app.UseExceptionHandler("/Error/500");
+            app.UseStatusCodePagesWithReExecute("/Error/{0}");
+
             app.Run();
         }
     }
