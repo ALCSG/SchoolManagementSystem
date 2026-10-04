@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SchoolManagementSystem.Models
 {
-    public class StudentViewModel : Student
+    public class StudentViewModel
     {
         public int StudentId { get; set; }
 
