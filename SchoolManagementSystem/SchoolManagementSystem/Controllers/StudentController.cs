@@ -45,6 +45,11 @@ namespace SchoolManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(StudentViewModel model)
         {
+            if (model.PhotoFile == null || model.PhotoFile.Length == 0)
+            {
+                ModelState.AddModelError(nameof(model.PhotoFile), "Student photo is required");
+            }
+
             if (!ModelState.IsValid)
             {
                 model.ClassGroups = await GetClassGroupsSelectListAsync();
@@ -111,6 +116,69 @@ namespace SchoolManagementSystem.Controllers
                 Value = g.ClassGroupId.ToString(),
                 Text = g.Description
             });
+        }
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            var student = await _studentRepository.GetByIdWithDetailsAsync(id);
+
+            if (student == null)
+                return NotFound();
+
+            var model = new StudentViewModel
+            {
+                StudentId = student.StudentId,
+                FirstName = student.AppUser.FirstName,
+                LastName = student.AppUser.LastName,
+                Email = student.AppUser.Email!,
+                ClassGroupId = student.ClassGroupId,
+                CurrentPhotoPath = student.StudentPhotoPath,
+                ClassGroups = await GetClassGroupsSelectListAsync()
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(StudentViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                model.ClassGroups = await GetClassGroupsSelectListAsync();
+                return View(model);
+            }
+
+            var student = await _studentRepository.GetByIdWithDetailsAsync(model.StudentId);
+
+            if (student == null)
+                return NotFound();
+
+            student.AppUser.FirstName = model.FirstName;
+            student.AppUser.LastName = model.LastName;
+            student.AppUser.Email = model.Email;
+            student.AppUser.UserName = model.Email;
+
+            var userUpdateResult = await _userManager.UpdateAsync(student.AppUser);
+
+            if (!userUpdateResult.Succeeded)
+            {
+                foreach (var error in userUpdateResult.Errors)
+                    ModelState.AddModelError(string.Empty, error.Description);
+
+                model.ClassGroups = await GetClassGroupsSelectListAsync();
+                return View(model);
+            }
+
+            student.ClassGroupId = model.ClassGroupId;
+
+            if(model.PhotoFile != null && model.PhotoFile.Length > 0)
+                student.StudentPhotoPath = await SavePhotoAsync(model.PhotoFile);
+
+            _studentRepository.Update(student);
+            await _studentRepository.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

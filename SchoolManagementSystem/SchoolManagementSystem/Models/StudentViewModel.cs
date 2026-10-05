@@ -8,9 +8,10 @@ namespace SchoolManagementSystem.Models
     {
         public int StudentId { get; set; }
 
-        [Required(ErrorMessage = "Student photo is required")]
         [Display(Name = "Student photo")]
         public IFormFile? PhotoFile { get; set; }
+
+        public string? CurrentPhotoPath { get; set; }
 
         [Required]
         [Display(Name = "Class Group")]
