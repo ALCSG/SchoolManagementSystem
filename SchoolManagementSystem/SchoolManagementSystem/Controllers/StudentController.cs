@@ -221,7 +221,7 @@ namespace SchoolManagementSystem.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
-            catch (DbUpdateException)
+            catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty,
                     "This student cannot be deleted because they still have enrollments. Remove the enrollments first.");
@@ -229,4 +229,5 @@ namespace SchoolManagementSystem.Controllers
             }
         }
     }
+    
 }
