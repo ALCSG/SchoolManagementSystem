@@ -1,0 +1,27 @@
+﻿@model SchoolManagementSystem.Data.Entities.Student
+
+@{
+    ViewData["Title"] = "Delete Student";
+}
+
+<h1>Delete Student</h1>
+<h3 class="text-danger">Are you sure you want to delete this student?</h3>
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<dl class="row">
+    <dt class="col-sm-3">Name</dt>
+    <dd class="col-sm-9">@Model.AppUser.FirstName @Model.AppUser.LastName</dd>
+
+    <dt class="col-sm-3">Class Group</dt>
+    <dd class="col-sm-9">@Model.ClassGroup.Description</dd>
+
+    <dt class="col-sm-3">Enrollments</dt>
+    <dd class="col-sm-9">@Model.Enrollments.Count</dd>
+</dl>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="StudentId" />
+    <input type="submit" value="Delete" class="btn btn-danger" />
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

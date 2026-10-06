@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using SchoolManagementSystem.Data;
 using SchoolManagementSystem.Data.Entities;
 using SchoolManagementSystem.Models;
@@ -189,6 +190,43 @@ namespace SchoolManagementSystem.Controllers
                 return NotFound();
 
             return View(student);
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            var student = await _studentRepository.GetByIdWithDetailsAsync(id);
+            if (student == null)
+                return NotFound();
+
+            return View(student);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var student = await _studentRepository.GetByIdWithDetailsAsync(id);
+
+            if (student == null)
+                return NotFound();
+
+            try
+            {
+                var appUser = student.AppUser;
+
+                _studentRepository.Delete(student);
+                await _studentRepository.SaveChangesAsync();
+
+                await _userManager.DeleteAsync(appUser);
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException)
+            {
+                ModelState.AddModelError(string.Empty,
+                    "This student cannot be deleted because they still have enrollments. Remove the enrollments first.");
+                return View("Delete", student);
+            }
         }
     }
 }
