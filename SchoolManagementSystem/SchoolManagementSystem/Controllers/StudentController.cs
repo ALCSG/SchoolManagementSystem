@@ -180,5 +180,15 @@ namespace SchoolManagementSystem.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var student = await _studentRepository.GetByIdWithDetailsAsync(id);
+
+            if (student == null)
+                return NotFound();
+
+            return View(student);
+        }
     }
 }
