@@ -29,6 +29,7 @@ namespace SchoolManagementSystem
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<IStudentRepository, StudentRepository>();
             builder.Services.AddScoped<IClassGroupRepository, ClassGroupRepository>();
+            builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
 
             var app = builder.Build();
 
