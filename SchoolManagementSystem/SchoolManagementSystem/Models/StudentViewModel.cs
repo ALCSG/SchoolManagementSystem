@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using SchoolManagementSystem.Data.Entities;
+using SchoolManagementSystem.Helpers;
 using System.ComponentModel.DataAnnotations;
 
 namespace SchoolManagementSystem.Models
@@ -9,6 +10,7 @@ namespace SchoolManagementSystem.Models
         public int StudentId { get; set; }
 
         [Display(Name = "Student photo")]
+        [MaxFileSizeHelper(2)]
         public IFormFile? PhotoFile { get; set; }
 
         public string? CurrentPhotoPath { get; set; }
