@@ -1,0 +1,36 @@
+﻿@model SchoolManagementSystem.Data.Entities.Subject
+
+@{
+    ViewData["Title"] = "Subject Details";
+}
+
+<h1>Subject Details</h1>
+<hr />
+
+<dl class="row">
+    <dt class="col-sm-3">Name</dt>
+    <dd class="col-sm-9">@Model.Name</dd>
+
+    <dt class="col-sm-3">Enrollments</dt>
+    <dd class="col-sm-9">@Model.Enrollments.Count</dd>
+</dl>
+
+<h4 class="mt-4">Courses</h4>
+@if (Model.Courses.Any())
+{
+    <ul>
+        @foreach (var course in Model.Courses)
+        {
+            <li>@course.Name</li>
+        }
+    </ul>
+}
+else
+{
+    <p class="text-muted">This subject is not linked to any course yet.</p>
+}
+
+<div class="mt-3">
+    <a asp-action="Edit" asp-route-id="@Model.SubjectId" class="btn btn-primary">Edit</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>
