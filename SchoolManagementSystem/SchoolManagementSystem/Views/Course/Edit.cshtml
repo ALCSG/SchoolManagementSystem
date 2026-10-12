@@ -1,0 +1,50 @@
+﻿@model SchoolManagementSystem.Models.CourseViewModel
+
+@{
+    ViewData["Title"] = "Edit Course";
+}
+
+<h1>Create Course</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="CourseId" />
+
+            <div class="form-group mb-3">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            @{
+                var subjects = (Model.Subjects ?? Enumerable.Empty<SelectListItem>())
+                    .Select(s => new { Id = s.Value, Name = s.Text })
+                    .ToList();
+                var selected = Model.SelectedSubjectIds.Select(i => i.ToString()).ToArray();
+            }
+
+            <div class="form-group mb-3">
+                <label asp-for="SelectedSubjectIds" class="control-label"></label>
+                <ejs-multiselect id="SelectedSubjectIds"
+                                 name="SelectedSubjectIds"
+                                 dataSource="subjects"
+                                 value="selected"
+                                 mode="Box"
+                                 placeholder="Select subjects"
+                                 popupHeight="250px">
+                    <e-multiselect-fields value="Id" text="Name"></e-multiselect-fields>
+                </ejs-multiselect>
+            </div>
+
+            <input type="submit" value="Save" class="btn btn-primary" />
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
