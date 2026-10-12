@@ -19,6 +19,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Syncfusion.AspNetCore.DropDowns" Version="35.1.39" />
+    <PackageReference Include="Syncfusion.AspNetCore.Themes" Version="35.1.39" />
   </ItemGroup>
 
 </Project>

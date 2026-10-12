@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SchoolManagementSystem.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/_content/Syncfusion.AspNetCore.Themes/styles/fluent2.css" />
+    <script src="~/_content/Syncfusion.AspNetCore.DropDowns/scripts/sf-multi-select.min.js"></script>
 </head>
 <body>
     <header>
@@ -27,7 +29,7 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Subject" asp-action="Index">Subjects</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Course" asp-action="Index">Courses</a>
                         </li>
                     </ul>
                 </div>
@@ -49,5 +51,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <ejs-scripts></ejs-scripts>
 </body>
 </html>
