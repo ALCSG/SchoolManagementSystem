@@ -1,0 +1,11 @@
+﻿using SchoolManagementSystem.Data.Entities;
+
+namespace SchoolManagementSystem.Data
+{
+    public interface ICourseRepository : IRepository<Course>
+    {
+        Task<IEnumerable<Course>> GetAllWithDetailsAsync();
+        Task<Course?> GetByIdWithDetailsAsync(int id);
+        Task<bool> NameExistsAsync(string name, int? excludeCourseId = null);
+    }
+}

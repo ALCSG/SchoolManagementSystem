@@ -25,5 +25,8 @@ namespace SchoolManagementSystem.Data
 
         public async Task<bool> NameExistsAsync(string name, int? excludeSubjectId = null)
                 => await _context.Subjects.AnyAsync(s => s.Name == name && (excludeSubjectId == null || s.SubjectId != excludeSubjectId));
+
+        public async Task<List<Subject>> GetByIdsAsync(IEnumerable<int> ids)
+                => await _context.Subjects.Where(s => ids.Contains(s.SubjectId)).ToListAsync();
     }
 }

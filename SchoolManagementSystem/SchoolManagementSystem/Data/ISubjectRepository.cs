@@ -9,5 +9,7 @@ namespace SchoolManagementSystem.Data
         Task<Subject> GetByIdWithDetailsAsync(int id);
 
         Task<bool> NameExistsAsync(string name, int? excludeSubjectId = null);
+
+        Task<List<Subject>> GetByIdsAsync(IEnumerable<int> ids);
     }
 }
