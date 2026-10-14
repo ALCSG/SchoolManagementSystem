@@ -17,26 +17,6 @@ namespace SchoolManagementSystem.Controllers
             _courseRepository = courseRepository;
         }
 
-        private async Task<IEnumerable<SelectListItem>> GetCoursesSelectListAsync()
-        {
-            var courses = await _courseRepository.GetAllAsync();
-
-            return courses
-                .OrderBy(c => c.Name)
-                .Select(c => new SelectListItem
-                {
-                    Value = c.CourseId.ToString(),
-                    Text = c.Name
-                });
-        }
-
-        public async Task<IActionResult> Index()
-        {
-            var classGroups = await _classGroupRepository.GetAllWithDetailsAsync();
-
-            return View(classGroups);
-        }
-
         public async Task<IActionResult> Details(int id)
         {
             var classGroup = await _classGroupRepository.GetByIdWithDetailsAsync(id);
@@ -47,9 +27,16 @@ namespace SchoolManagementSystem.Controllers
             return View(classGroup);
         }
 
+        public async Task<IActionResult> Index()
+        {
+            var classGroup = await _classGroupRepository.GetAllWithDetailsAsync();
+
+            return View(classGroup);
+        }
+
         public async Task<IActionResult> Create()
         {
-            var model = new ClassGroupViewModel()
+            var model = new ClassGroupViewModel
             {
                 CoursesList = await GetCoursesSelectListAsync()
             };
@@ -61,7 +48,7 @@ namespace SchoolManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ClassGroupViewModel model)
         {
-            if(await _classGroupRepository.DescriptionExistsInCourseAsync(model.Description, model.CourseId))
+            if (await _classGroupRepository.DescriptionExistsInCourseAsync(model.Description, model.CourseId))
                 ModelState.AddModelError(nameof(model.Description), "A class group with this description already exists");
 
             if (!ModelState.IsValid)
@@ -80,6 +67,19 @@ namespace SchoolManagementSystem.Controllers
             await _classGroupRepository.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private async Task<IEnumerable<SelectListItem>> GetCoursesSelectListAsync()
+        {
+            var courses = await _courseRepository.GetAllAsync();
+
+            return courses
+                .OrderBy(c => c.Name)
+                .Select(c => new SelectListItem
+                {
+                    Value = c.CourseId.ToString(),
+                    Text = c.Name
+                });
         }
     }
 }
