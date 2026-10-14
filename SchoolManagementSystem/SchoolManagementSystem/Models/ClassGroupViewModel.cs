@@ -14,6 +14,7 @@ namespace SchoolManagementSystem.Models
 
         public IEnumerable<SelectListItem>? CoursesList { get; set; }
 
+        [Display(Name = "Course")]
         public int CourseId { get; set; }
     }
 }
