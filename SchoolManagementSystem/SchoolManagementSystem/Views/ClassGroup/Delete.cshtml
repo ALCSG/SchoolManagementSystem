@@ -1,0 +1,29 @@
+﻿@model SchoolManagementSystem.Data.Entities.ClassGroup
+
+@{
+    ViewData["Title"] = "Delete Class Group";
+}
+
+<h1>Delete Class Group</h1>
+<h3 class="text-danger">Are you sure you want to delete this class group?</h3>
+
+<dl class="row">
+    <dt class="col-sm-3">Description</dt>
+    <dd class="col-sm-9">@Model.Description</dd>
+
+    <dt class="col-sm-3">Course</dt>
+    <dd class="col-sm-9">@Model.Course.Name</dd>
+
+    <dt class="col-sm-3">Students</dt>
+    <dd class="col-sm-9">@Model.Students.Count</dd>
+</dl>
+
+<form asp-action="Delete" asp-route-id="@Model.ClassGroupId">
+    <input type="hidden" asp-for="ClassGroupId" />
+    <input type="submit" value="Delete" class="btn btn-danger" />
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+<hr />
+
+<div asp-validation-summary="All" class="text-danger"></div>

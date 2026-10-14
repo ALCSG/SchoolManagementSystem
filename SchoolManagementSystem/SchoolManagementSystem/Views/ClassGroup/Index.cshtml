@@ -1,0 +1,37 @@
+﻿@model IEnumerable<SchoolManagementSystem.Data.Entities.ClassGroup>
+
+@{
+    ViewData["Title"] = "Class Groups";
+}
+
+<h1>Class Groups</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">New Class Group</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Description</th>
+            <th>Course</th>
+            <th>Students</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var group in Model)
+        {
+            <tr>
+                <td>@group.Description</td>
+                <td>@group.Course.Name</td>
+                <td>@group.Students.Count</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@group.ClassGroupId" class="btn btn-sm btn-outline-secondary">Details</a>
+                    <a asp-action="Edit" asp-route-id="@group.ClassGroupId" class="btn btn-sm btn-outline-primary">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@group.ClassGroupId" class="btn btn-sm btn-outline-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
