@@ -17,6 +17,19 @@ namespace SchoolManagementSystem.Controllers
             _courseRepository = courseRepository;
         }
 
+        private async Task<IEnumerable<SelectListItem>> GetCoursesSelectListAsync()
+        {
+            var courses = await _courseRepository.GetAllAsync();
+
+            return courses
+                .OrderBy(c => c.Name)
+                .Select(c => new SelectListItem
+                {
+                    Value = c.CourseId.ToString(),
+                    Text = c.Name
+                });
+        }
+
         public async Task<IActionResult> Details(int id)
         {
             var classGroup = await _classGroupRepository.GetByIdWithDetailsAsync(id);
@@ -69,17 +82,24 @@ namespace SchoolManagementSystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private async Task<IEnumerable<SelectListItem>> GetCoursesSelectListAsync()
+        public async Task<IActionResult> Edit(int id)
         {
-            var courses = await _courseRepository.GetAllAsync();
+            var classGroup = await _classGroupRepository.GetByIdAsync(id);
 
-            return courses
-                .OrderBy(c => c.Name)
-                .Select(c => new SelectListItem
-                {
-                    Value = c.CourseId.ToString(),
-                    Text = c.Name
-                });
+            if (classGroup == null)
+                return NotFound();
+
+            var model = new ClassGroupViewModel()
+            {
+                ClassGroupId = classGroup.ClassGroupId,
+                CourseId = classGroup.CourseId,
+                CoursesList = await GetCoursesSelectListAsync(),
+                Description = classGroup.Description
+            };
+
+            return View(model);
         }
+
+
     }
 }
