@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SchoolManagementSystem.Data.Interface;
 
-namespace SchoolManagementSystem.Data
+namespace SchoolManagementSystem.Data.Repository
 {
     public class Repository<T> : IRepository<T> where T : class
     {

@@ -1,4 +1,4 @@
-﻿namespace SchoolManagementSystem.Data
+﻿namespace SchoolManagementSystem.Data.Interface
 {
     public interface IRepository<T> where T : class
     {

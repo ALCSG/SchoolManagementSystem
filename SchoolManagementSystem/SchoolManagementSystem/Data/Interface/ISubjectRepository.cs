@@ -1,6 +1,6 @@
 ﻿using SchoolManagementSystem.Data.Entities;
 
-namespace SchoolManagementSystem.Data
+namespace SchoolManagementSystem.Data.Interface
 {
     public interface ISubjectRepository : IRepository<Subject>
     {
