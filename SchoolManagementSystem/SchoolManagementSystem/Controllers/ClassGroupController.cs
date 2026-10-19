@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using SchoolManagementSystem.Data;
 using SchoolManagementSystem.Data.Entities;
+using SchoolManagementSystem.Data.Interface;
 using SchoolManagementSystem.Models;
 
 namespace SchoolManagementSystem.Controllers
