@@ -1,0 +1,49 @@
+﻿@model SchoolManagementSystem.Models.EnrollmentViewModel
+
+@{
+    ViewData["Title"] = "Add Enrollment";
+}
+
+<h1>Add Enrollment</h1>
+<hr />
+
+@if (Model.SubjectsList == null || !Model.SubjectsList.Any())
+{
+    <div class="alert alert-info">
+        <strong>@Model.StudentName</strong> is already enrolled in every subject of the course,
+        or the course has no subjects yet.
+    </div>
+
+    <a asp-controller="Student" asp-action="Details" asp-route-id="@Model.StudentId" class="btn btn-secondary">Back to Student</a>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="StudentId" />
+
+                <div class="form-group mb-3">
+                    <label asp-for="StudentName" class="control-label"></label>
+                    <input asp-for="StudentName" class="form-control" disabled />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="SubjectId" class="control-label"></label>
+                    <select asp-for="SubjectId" asp-items="Model.SubjectsList" class="form-control">
+                        <option value="">-- Select a Subject --</option>
+                    </select>
+                    <span asp-validation-for="SubjectId" class="text-danger"></span>
+                </div>
+
+                <input type="submit" value="Add" class="btn btn-primary" />
+                <a asp-controller="Student" asp-action="Details" asp-route-id="@Model.StudentId" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
