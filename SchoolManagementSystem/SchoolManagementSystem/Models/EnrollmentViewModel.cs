@@ -16,7 +16,7 @@ namespace SchoolManagementSystem.Models
         public int SubjectId { get; set; }
 
         [Display(Name = "Subject")]
-        public int SubjectName { get; set; }
+        public string? SubjectName { get; set; }
 
         [Display(Name = "Absences")]
         [Range(0, 365)]
