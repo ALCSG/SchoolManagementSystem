@@ -1,0 +1,48 @@
+﻿@model SchoolManagementSystem.Models.EnrollmentViewModel
+
+@{
+    ViewData["Title"] = "Edit Enrollment";
+}
+
+<h1>Edit Enrollment</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="EnrollmentId" />
+            <input type="hidden" asp-for="StudentId" />
+
+            <div class="form-group mb-3">
+                <label asp-for="StudentName" class="control-label"></label>
+                <input asp-for="StudentName" class="form-control" disabled />
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="SubjectName" class="control-label"></label>
+                <input asp-for="SubjectName" class="form-control" disabled />
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="AbsenceCount" class="control-label"></label>
+                <input asp-for="AbsenceCount" class="form-control" />
+                <span asp-validation-for="AbsenceCount" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="FinalGrade" class="control-label"></label>
+                <input asp-for="FinalGrade" class="form-control" />
+                <span asp-validation-for="FinalGrade" class="text-danger"></span>
+                <div class="form-text">Leave empty if the student has not been graded yet (0 to 20).</div>
+            </div>
+
+            <input type="submit" value="Save" class="btn btn-primary" />
+            <a asp-controller="Student" asp-action="Details" asp-route-id="@Model.StudentId" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
