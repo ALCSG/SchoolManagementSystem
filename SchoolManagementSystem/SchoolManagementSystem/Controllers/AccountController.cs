@@ -57,5 +57,11 @@ namespace SchoolManagementSystem.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
     }
 }
