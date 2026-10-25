@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementSystem.Data.Entities;
 using SchoolManagementSystem.Data.Interface;
+using SchoolManagementSystem.Helpers;
 using SchoolManagementSystem.Models;
 
 namespace SchoolManagementSystem.Controllers
@@ -14,17 +15,20 @@ namespace SchoolManagementSystem.Controllers
         private readonly IClassGroupRepository _classGroupRepository;
         private readonly UserManager<AppUser> _userManager;
         private readonly IWebHostEnvironment _environment;
+        private readonly IRoleHelper _roleHelper;
 
         public StudentController(
             IStudentRepository studentRepository,
             IClassGroupRepository classGroupRepository,
             UserManager<AppUser> userManager,
-            IWebHostEnvironment environment)
+            IWebHostEnvironment environment,
+            IRoleHelper roleHelper)
         {
             _studentRepository = studentRepository;
             _classGroupRepository = classGroupRepository;
             _userManager = userManager;
             _environment = environment;
+            _roleHelper = roleHelper;
         }
 
         public async Task<IActionResult> Index()
@@ -78,17 +82,41 @@ namespace SchoolManagementSystem.Controllers
                 return View(model);
             }
 
-            var photoPath = await SavePhotoAsync(model.PhotoFile!);
+            var roleResult = await _roleHelper.AddUserToRoleAsync(appUser, AppRoles.Student);
 
-            var student = new Student
+            if (!roleResult.Succeeded)
             {
-                AppUserId = appUser.Id,
-                ClassGroupId = model.ClassGroupId,
-                StudentPhotoPath = photoPath
-            };
+                await _userManager.DeleteAsync(appUser);
 
-            await _studentRepository.AddAsync(student);
-            await _studentRepository.SaveChangesAsync();
+                foreach (var error in roleResult.Errors)
+                    ModelState.AddModelError(string.Empty, error.Description);
+
+                model.ClassGroups = await GetClassGroupsSelectListAsync();
+                return View(model);
+            }
+
+            try
+            {
+                var photoPath = await SavePhotoAsync(model.PhotoFile!);
+
+                var student = new Student
+                {
+                    AppUserId = appUser.Id,
+                    ClassGroupId = model.ClassGroupId,
+                    StudentPhotoPath = photoPath
+                };
+
+                await _studentRepository.AddAsync(student);
+                await _studentRepository.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                await _userManager.DeleteAsync(appUser);
+
+                ModelState.AddModelError(string.Empty, "The student could not be created. Please try again.");
+                model.ClassGroups = await GetClassGroupsSelectListAsync();
+                return View(model);
+            }
 
             return RedirectToAction(nameof(Index));
         }
@@ -210,6 +238,13 @@ namespace SchoolManagementSystem.Controllers
             if (student == null)
                 return NotFound();
 
+            if (student.Enrollments.Any())
+            {
+                ModelState.AddModelError(string.Empty,
+                    "This student cannot be deleted because they still have enrollments. Remove the enrollments first.");
+                return View("Delete", student);
+            }
+
             try
             {
                 var appUser = student.AppUser;
@@ -217,14 +252,20 @@ namespace SchoolManagementSystem.Controllers
                 _studentRepository.Delete(student);
                 await _studentRepository.SaveChangesAsync();
 
-                await _userManager.DeleteAsync(appUser);
+                var deleteResult = await _userManager.DeleteAsync(appUser);
+
+                if (!deleteResult.Succeeded)
+                {
+                    ModelState.AddModelError(string.Empty,
+                        "The student was removed, but the login account could not be deleted.");
+                    return View("Delete", student);
+                }
 
                 return RedirectToAction(nameof(Index));
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is DbUpdateException or InvalidOperationException)
             {
-                ModelState.AddModelError(string.Empty,
-                    "This student cannot be deleted because they still have enrollments. Remove the enrollments first.");
+                ModelState.AddModelError(string.Empty, "This student could not be deleted because it is still in use.");
                 return View("Delete", student);
             }
         }
