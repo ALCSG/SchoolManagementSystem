@@ -20,7 +20,8 @@ namespace SchoolManagementSystem.Controllers
         {
             var model = new DashboardViewModel
             {
-                OpenAlerts = await _alertRepository.GetOpenAlertsWithReporterAsync()
+                OpenAlerts = await _alertRepository.GetOpenAlertsWithReporterAsync(),
+                ClosedAlerts = await _alertRepository.GetClosedAlertsWithReporterAsync()
             };
 
             return View(model);
