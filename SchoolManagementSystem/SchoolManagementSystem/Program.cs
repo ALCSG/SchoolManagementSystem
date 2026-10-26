@@ -36,6 +36,7 @@ namespace SchoolManagementSystem
             builder.Services.AddScoped<ICourseRepository, CourseRepository>();
             builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
             builder.Services.AddScoped<IRoleHelper, RoleHelper>();
+            builder.Services.AddScoped<IAlertRepository, AlertRepository>();
 
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(builder.Configuration["Syncfusion:LicenseKey"]);
 
