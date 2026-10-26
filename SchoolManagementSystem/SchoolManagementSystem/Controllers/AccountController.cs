@@ -2,17 +2,21 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SchoolManagementSystem.Data.Entities;
+using SchoolManagementSystem.Helpers;
 using SchoolManagementSystem.Models;
+using System.Security.Claims;
 
 namespace SchoolManagementSystem.Controllers
 {
     public class AccountController : Controller
     {
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly UserManager<AppUser> _userManager;
 
-        public AccountController(SignInManager<AppUser> signInManager)
+        public AccountController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager)
         {
             _signInManager = signInManager;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -40,7 +44,19 @@ namespace SchoolManagementSystem.Controllers
                 false);
 
             if (result.Succeeded)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Username);
+
+                if (user != null)
+                {
+                    if (await _userManager.IsInRoleAsync(user, AppRoles.Admin))
+                    {
+                        return RedirectToAction("Index", "Dashboard");
+                    }
+                }
+
                 return RedirectToAction("Start", "Home");
+            }
 
             ModelState.AddModelError(string.Empty, "Invalid login information");
 
