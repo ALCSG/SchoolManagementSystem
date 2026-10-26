@@ -1,0 +1,50 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="text-center mb-5">
+    <h1 class="display-5">School Management System</h1>
+    <p class="lead text-muted">Manage students, courses, subjects and class groups.</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 text-center">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">Students</h5>
+                <p class="card-text text-muted">Create, edit and consult student records.</p>
+                <a asp-controller="Student" asp-action="Index" class="btn btn-primary mt-auto">Open</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 text-center">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">Courses</h5>
+                <p class="card-text text-muted">Manage courses and their subjects.</p>
+                <a asp-controller="Course" asp-action="Index" class="btn btn-primary mt-auto">Open</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 text-center">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">Class Groups</h5>
+                <p class="card-text text-muted">Organize students into class groups per course.</p>
+                <a asp-controller="ClassGroup" asp-action="Index" class="btn btn-primary mt-auto">Open</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 text-center">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">Subjects</h5>
+                <p class="card-text text-muted">Manage the catalog of subjects.</p>
+                <a asp-controller="Subject" asp-action="Index" class="btn btn-primary mt-auto">Open</a>
+            </div>
+        </div>
+    </div>
+</div>
