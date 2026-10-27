@@ -91,6 +91,27 @@
                                             Students
                                         </a>
                                     </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link"
+                                           asp-area=""
+                                           asp-controller="Alert"
+                                           asp-action="Create">
+                                            Report a problem
+                                        </a>
+                                    </li>
+                                }
+
+                                @if (User.IsInRole(AppRoles.Admin))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link"
+                                           asp-area=""
+                                           asp-controller="Dashboard"
+                                           asp-action="Index">
+                                            Dashboard
+                                        </a>
+                                    </li>
                                 }
                             </ul>
 
@@ -109,6 +130,16 @@
 
     <div class="container">
         <main role="main" class="pb-3">
+            <main role="main" class="pb-3">
+                @if (TempData["Message"] is string message)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @message
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                @RenderBody()
+            </main>
             @RenderBody()
         </main>
     </div>

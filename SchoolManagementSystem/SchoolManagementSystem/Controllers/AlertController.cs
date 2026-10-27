@@ -59,8 +59,11 @@ namespace SchoolManagementSystem.Controllers
                     ReportedByUserId = user
                 };
 
+
                 await _alertRepository.AddAsync(alert);
                 await _alertRepository.SaveChangesAsync();
+
+                TempData["Message"] = "Your alert was sent to the administrator.";
 
                 return RedirectToAction(nameof(Index));
             }
