@@ -85,7 +85,7 @@ namespace SchoolManagementSystem.Controllers
 
             await _alertRepository.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index), "Dashboard");
+            return RedirectToAction("Index", "Dashboard");
         }
 
         [HttpPost]
@@ -102,7 +102,7 @@ namespace SchoolManagementSystem.Controllers
 
             await _alertRepository.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index), "Dashboard");
+            return RedirectToAction("Index", "Dashboard");
         }
     }
 }
