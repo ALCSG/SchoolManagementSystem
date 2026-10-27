@@ -65,7 +65,7 @@ namespace SchoolManagementSystem.Controllers
 
                 TempData["Message"] = "Your alert was sent to the administrator.";
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Create));
             }
             catch (Exception)
             {
