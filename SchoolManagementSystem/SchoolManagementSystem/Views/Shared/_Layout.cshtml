@@ -30,13 +30,6 @@
             <e-content-template>
                 <nav class="navbar navbar-expand-sm navbar-dark w-100">
                     <div class="container-fluid">
-                        @*<a class="navbar-brand"
-                           asp-area=""
-                           asp-controller="Home"
-                           asp-action="Index">
-                            School Management System
-                        </a>*@
-
                         <button class="navbar-toggler"
                                 type="button"
                                 data-bs-toggle="collapse"
@@ -50,70 +43,75 @@
                         <div class="navbar-collapse collapse justify-content-between"
                              id="mainNavigation">
                             <ul class="navbar-nav flex-grow-1">
-                                @if (User.IsInRole(AppRoles.Admin) ||
-                                     User.IsInRole(AppRoles.Employee))
-                                {
-                                    <li class="nav-item">
-                                        <a class="nav-link"
-                                           asp-area=""
-                                           asp-controller="Course"
-                                           asp-action="Index">
-                                            Courses
-                                        </a>
-                                    </li>
+    <li class="nav-item">
+        <a class="nav-link"
+           asp-area=""
+           asp-controller="Home"
+           asp-action="Index">
+            Home
+        </a>
+    </li>
 
-                                    <li class="nav-item">
-                                        <a class="nav-link"
-                                           asp-area=""
-                                           asp-controller="Subject"
-                                           asp-action="Index">
-                                            Subjects
-                                        </a>
-                                    </li>
-                                }
+    @if (User.IsInRole(AppRoles.Admin))
+    {
+        <li class="nav-item">
+            <a class="nav-link"
+               asp-area=""
+               asp-controller="Course"
+               asp-action="Index">
+                Courses
+            </a>
+        </li>
 
-                                @if (User.IsInRole(AppRoles.Employee))
-                                {
-                                    <li class="nav-item">
-                                        <a class="nav-link"
-                                           asp-area=""
-                                           asp-controller="ClassGroup"
-                                           asp-action="Index">
-                                            Class Groups
-                                        </a>
-                                    </li>
+        <li class="nav-item">
+            <a class="nav-link"
+               asp-area=""
+               asp-controller="Subject"
+               asp-action="Index">
+                Subjects
+            </a>
+        </li>
 
-                                    <li class="nav-item">
-                                        <a class="nav-link"
-                                           asp-area=""
-                                           asp-controller="Student"
-                                           asp-action="Index">
-                                            Students
-                                        </a>
-                                    </li>
+        <li class="nav-item">
+            <a class="nav-link"
+               asp-area=""
+               asp-controller="Dashboard"
+               asp-action="Index">
+                Dashboard
+            </a>
+        </li>
+    }
 
-                                    <li class="nav-item">
-                                        <a class="nav-link"
-                                           asp-area=""
-                                           asp-controller="Alert"
-                                           asp-action="Create">
-                                            Report a problem
-                                        </a>
-                                    </li>
-                                }
+    @if (User.IsInRole(AppRoles.Employee))
+    {
+        <li class="nav-item">
+            <a class="nav-link"
+               asp-area=""
+               asp-controller="ClassGroup"
+               asp-action="Index">
+                Class Groups
+            </a>
+        </li>
 
-                                @if (User.IsInRole(AppRoles.Admin))
-                                {
-                                    <li class="nav-item">
-                                        <a class="nav-link"
-                                           asp-area=""
-                                           asp-controller="Dashboard"
-                                           asp-action="Index">
-                                            Dashboard
-                                        </a>
-                                    </li>
-                                }
-                            </ul>
+        <li class="nav-item">
+            <a class="nav-link"
+               asp-area=""
+               asp-controller="Student"
+               asp-action="Index">
+                Students
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link"
+               asp-area=""
+               asp-controller="Alert"
+               asp-action="Create">
+                Report a problem
+            </a>
+        </li>
+    }
+</ul>
 
                             <partial name="_LoginPartial" />
                         </div>
