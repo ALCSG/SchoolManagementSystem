@@ -40,11 +40,59 @@
         color: white !important;
     }
 
-    #mainAppBar #accountDropdown {
-        color: white !important;
+    /* Login e botão da conta */
+    #mainAppBar .account-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1rem;
+        background-color: #fff;
+        color: #09233f;
+        border: 1px solid #fff;
+        border-radius: 0.5rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        transition: background-color 0.15s ease, border-color 0.15s ease;
     }
 
-    #mainAppBar a.btn-outline-primary {
-        color: white;
-        border-color: white;
+        /* Hover e dropdown aberto */
+        #mainAppBar .account-button:hover,
+        #mainAppBar .account-button.show {
+            background-color: #eaf0f6;
+            color: #09233f;
+            border-color: #eaf0f6;
+        }
+
+        /* Foco ao navegar com teclado */
+        #mainAppBar .account-button:focus-visible {
+            outline: 3px solid #fff;
+            outline-offset: 3px;
+            box-shadow: 0 0 0 3px #09233f;
+        }
+
+    /* Menu da conta */
+    #mainAppBar .account-menu {
+        min-width: 190px;
+        margin-top: 0.5rem;
+        padding: 0.4rem;
+        background-color: #fff;
+        border: 1px solid #dce3eb;
+        border-radius: 0.5rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        z-index: 1050;
     }
+
+        #mainAppBar .account-menu .dropdown-item {
+            padding: 0.6rem 0.8rem;
+            color: #09233f;
+            border-radius: 0.25rem;
+        }
+
+            #mainAppBar .account-menu .dropdown-item:hover,
+            #mainAppBar .account-menu .dropdown-item:focus {
+                background-color: #eaf0f6;
+                color: #09233f;
+            }
