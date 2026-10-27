@@ -16,12 +16,12 @@ namespace SchoolManagementSystem.Data.Repository
                         .OrderByDescending(a => a.CreatedAt)
                         .ToListAsync();
 
-        public async Task<IEnumerable<Alert>> GetClosedAlertsWithReporterAsync()
+        public async Task<IEnumerable<Alert>> GetClosedAlertsWithReporterAsync(int limit = 10)
                     => await _context.Alerts
                         .Include(a => a.ReportedBy)
                         .Where(a => a.IsResolved)
                         .OrderByDescending(a => a.CreatedAt)
+                        .Take(limit)
                         .ToListAsync();
-
     }
 }
