@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>@ViewData["Title"] - SchoolManagementSystem</title>
 
     <script type="importmap"></script>
@@ -24,12 +25,15 @@
     <script src="~/_content/Syncfusion.AspNetCore.DropDowns/scripts/sf-multi-select.min.js"></script>
     <script src="~/_content/Syncfusion.AspNetCore.Navigations/scripts/sf-appbar.min.js"></script>
 </head>
-<body>
+
+<body class="d-flex flex-column min-vh-100">
     <header>
         <ejs-appbar id="mainAppBar" colorMode="Dark">
             <e-content-template>
+
                 <nav class="navbar navbar-expand-sm navbar-dark w-100">
                     <div class="container-fluid">
+
                         <button class="navbar-toggler"
                                 type="button"
                                 data-bs-toggle="collapse"
@@ -42,103 +46,114 @@
 
                         <div class="navbar-collapse collapse justify-content-between"
                              id="mainNavigation">
+
                             <ul class="navbar-nav flex-grow-1">
-    <li class="nav-item">
-        <a class="nav-link"
-           asp-area=""
-           asp-controller="Home"
-           asp-action="Index">
-            Home
-        </a>
-    </li>
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                       asp-area=""
+                                       asp-controller="Home"
+                                       asp-action="Index">
+                                        Home
+                                    </a>
+                                </li>
 
-    @if (User.IsInRole(AppRoles.Admin))
-    {
-        <li class="nav-item">
-            <a class="nav-link"
-               asp-area=""
-               asp-controller="Course"
-               asp-action="Index">
-                Courses
-            </a>
-        </li>
+                                @if (User.IsInRole(AppRoles.Admin))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link"
+                                           asp-area=""
+                                           asp-controller="Course"
+                                           asp-action="Index">
+                                            Courses
+                                        </a>
+                                    </li>
 
-        <li class="nav-item">
-            <a class="nav-link"
-               asp-area=""
-               asp-controller="Subject"
-               asp-action="Index">
-                Subjects
-            </a>
-        </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link"
+                                           asp-area=""
+                                           asp-controller="Subject"
+                                           asp-action="Index">
+                                            Subjects
+                                        </a>
+                                    </li>
 
-        <li class="nav-item">
-            <a class="nav-link"
-               asp-area=""
-               asp-controller="Dashboard"
-               asp-action="Index">
-                Dashboard
-            </a>
-        </li>
-    }
+                                    <li class="nav-item">
+                                        <a class="nav-link"
+                                           asp-area=""
+                                           asp-controller="Dashboard"
+                                           asp-action="Index">
+                                            Dashboard
+                                        </a>
+                                    </li>
+                                }
 
-    @if (User.IsInRole(AppRoles.Employee))
-    {
-        <li class="nav-item">
-            <a class="nav-link"
-               asp-area=""
-               asp-controller="ClassGroup"
-               asp-action="Index">
-                Class Groups
-            </a>
-        </li>
+                                @if (User.IsInRole(AppRoles.Employee))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link"
+                                           asp-area=""
+                                           asp-controller="ClassGroup"
+                                           asp-action="Index">
+                                            Class Groups
+                                        </a>
+                                    </li>
 
-        <li class="nav-item">
-            <a class="nav-link"
-               asp-area=""
-               asp-controller="Student"
-               asp-action="Index">
-                Students
-            </a>
-        </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link"
+                                           asp-area=""
+                                           asp-controller="Student"
+                                           asp-action="Index">
+                                            Students
+                                        </a>
+                                    </li>
 
-        <li class="nav-item">
-            <a class="nav-link"
-               asp-area=""
-               asp-controller="Alert"
-               asp-action="Create">
-                Report a problem
-            </a>
-        </li>
-    }
-</ul>
+                                    <li class="nav-item">
+                                        <a class="nav-link"
+                                           asp-area=""
+                                           asp-controller="Alert"
+                                           asp-action="Create">
+                                            Report a problem
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
 
                             <partial name="_LoginPartial" />
+
                         </div>
                     </div>
                 </nav>
 
                 <div class="container appbar-heading">
                     <h2>School Management System</h2>
-                    <p>Connecting students, courses and your school community.</p>
+                    <p>
+                        Connecting students, courses and your school community.
+                    </p>
                 </div>
+
             </e-content-template>
         </ejs-appbar>
     </header>
 
-    <div class="container">
-        <main role="main" class="pb-3">
-            <main role="main" class="pb-3">
-                @if (TempData["Message"] is string message)
-                {
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        @message
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                }
-                @RenderBody()
-            </main>
+    <div class="container flex-grow-1">
+        <main role="main" class="py-4">
+
+            @if (TempData["Message"] is string message)
+            {
+                <div class="alert alert-success alert-dismissible fade show"
+                     role="alert">
+                    @message
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Close">
+                    </button>
+                </div>
+            }
+
             @RenderBody()
+
         </main>
     </div>
 
