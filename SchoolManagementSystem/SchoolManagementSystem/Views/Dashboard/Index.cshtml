@@ -4,81 +4,163 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<h1>Administrator dashboard</h1>
-<p class="text-muted">Problems reported by the staff that need your attention.</p>
-
-<div class="d-flex align-items-center mb-3">
-    <h4 class="mb-0 me-2">Open alerts</h4>
-    <span class="badge @(Model.OpenAlerts.Any() ? "bg-danger" : "bg-success")">
-        @Model.OpenAlerts.Count()
-    </span>
+<div class="mb-4">
+    <h1 class="h3 mb-1">Administrator dashboard</h1>
+    <p class="text-muted mb-0">
+        Review problems and requests reported by the staff.
+    </p>
 </div>
 
-@if (!Model.OpenAlerts.Any())
-{
-    <div class="alert alert-success">There are no open alerts. Everything is in order.</div>
-}
-else
-{
-    <div class="list-group mb-4">
-        @foreach (var item in Model.OpenAlerts)
-        {
-            <div class="list-group-item">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <p class="mb-1">@item.Message</p>
-                        <small class="text-muted">
-                            Reported by @item.ReportedBy.FirstName @item.ReportedBy.LastName
-                            on @item.CreatedAt.ToString("yyyy-MM-dd HH:mm")
-                        </small>
-                    </div>
-
-                    <form asp-controller="Alert"
-                          asp-action="Resolve"
-                          asp-route-alertId="@item.AlertId"
-                          method="post">
-                        <button type="submit" class="btn btn-sm btn-outline-success">
-                            Mark as resolved
-                        </button>
-                    </form>
-                </div>
-            </div>
-        }
+<section class="mb-5">
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <h2 class="h4 mb-0">Open alerts</h2>
+        <span class="badge @(Model.OpenAlerts.Any() ? "bg-danger" : "bg-success")">
+            @Model.OpenAlerts.Count()
+        </span>
     </div>
-}
 
-<h4 class="mb-1">Closed alerts</h4>
-<p class="text-muted small mb-3">Showing the most recent closed alerts only.</p>
+    @if (!Model.OpenAlerts.Any())
+    {
+        <div class="alert alert-success">
+            There are no open alerts. Everything is in order.
+        </div>
+    }
+    else
+    {
+        <div class="list-group shadow-sm">
+            @foreach (var item in Model.OpenAlerts)
+            {
+                <div class="list-group-item p-3">
+                    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+                        <div class="flex-grow-1">
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                                <h3 class="h6 mb-0">
+                                    @(string.IsNullOrWhiteSpace(item.Title)
+                                        ? "Untitled alert"
+                                        : item.Title)
+                                </h3>
 
-@if (!Model.ClosedAlerts.Any())
-{
-    <div class="alert alert-secondary">There are no closed alerts.</div>
-}
-else
-{
-    <div class="list-group">
-        @foreach (var item in Model.ClosedAlerts)
-        {
-            <div class="list-group-item">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <p class="mb-1">@item.Message</p>
-                        <small class="text-muted">
-                            Reported by @item.ReportedBy.FirstName @item.ReportedBy.LastName
-                            on @item.CreatedAt.ToString("yyyy-MM-dd HH:mm")
-                        </small>
+                                <span class="badge bg-danger">Pending</span>
+                            </div>
+
+                            <p class="text-muted small mb-1">
+                                Reported by
+                                @if (item.ReportedBy != null)
+                                {
+                                    <span>
+                                        @item.ReportedBy.FirstName @item.ReportedBy.LastName
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span>Unknown user</span>
+                                }
+                            </p>
+
+                            <p class="text-muted small mb-0">
+                                Created on @item.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                            </p>
+                        </div>
+
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <a asp-controller="Alert"
+                               asp-action="Details"
+                               asp-route-id="@item.AlertId"
+                               class="btn btn-sm btn-outline-primary">
+                                View details
+                            </a>
+
+                            <form asp-controller="Alert"
+                                  asp-action="Resolve"
+                                  asp-route-alertId="@item.AlertId"
+                                  method="post"
+                                  class="m-0">
+                                <button type="submit"
+                                        class="btn btn-sm btn-outline-success">
+                                    Mark as resolved
+                                </button>
+                            </form>
+                        </div>
                     </div>
-
-                    <form asp-controller="Alert"
-                          asp-action="Unresolve"
-                          asp-route-alertId="@item.AlertId"
-                          method="post">
-                        <button type="submit" class="btn btn-sm btn-outline-warning">
-                            Undo resolution
-                        </button>
-                    </form>
                 </div>
-            </div>
-        }
+            }
+        </div>
+    }
+</section>
+
+<section>
+    <div class="mb-3">
+        <h2 class="h4 mb-1">Closed alerts</h2>
+        <p class="text-muted small mb-0">
+            Showing the most recent closed alerts only.
+        </p>
     </div>
-}
+
+    @if (!Model.ClosedAlerts.Any())
+    {
+        <div class="alert alert-secondary">
+            There are no closed alerts.
+        </div>
+    }
+    else
+    {
+        <div class="list-group shadow-sm">
+            @foreach (var item in Model.ClosedAlerts)
+            {
+                <div class="list-group-item p-3">
+                    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+                        <div class="flex-grow-1">
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                                <h3 class="h6 mb-0">
+                                    @(string.IsNullOrWhiteSpace(item.Title)
+                                        ? "Untitled alert"
+                                        : item.Title)
+                                </h3>
+
+                                <span class="badge bg-success">Resolved</span>
+                            </div>
+
+                            <p class="text-muted small mb-1">
+                                Reported by
+                                @if (item.ReportedBy != null)
+                                {
+                                    <span>
+                                        @item.ReportedBy.FirstName @item.ReportedBy.LastName
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span>Unknown user</span>
+                                }
+                            </p>
+
+                            <p class="text-muted small mb-0">
+                                Created on @item.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                            </p>
+                        </div>
+
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <a asp-controller="Alert"
+                               asp-action="Details"
+                               asp-route-id="@item.AlertId"
+                               class="btn btn-sm btn-outline-primary">
+                                View details
+                            </a>
+
+                            <form asp-controller="Alert"
+                                  asp-action="Unresolve"
+                                  asp-route-alertId="@item.AlertId"
+                                  method="post"
+                                  class="m-0">
+                                <button type="submit"
+                                        class="btn btn-sm btn-outline-warning">
+                                    Undo resolution
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</section>
