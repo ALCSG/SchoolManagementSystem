@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using SchoolManagementSystem.Data;
 using SchoolManagementSystem.Data.Entities;
+using SchoolManagementSystem.Data.Interface;
 using SchoolManagementSystem.Helpers;
 using SchoolManagementSystem.Models;
 
@@ -14,11 +16,22 @@ namespace SchoolManagementSystem.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IRoleHelper _roleHelper;
+        private readonly IStudentRepository _studentRepository;
+        private readonly DataContext _context;
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(UserManager<AppUser> userManager, IRoleHelper roleHelper)
+        public UserController(
+            UserManager<AppUser> userManager,
+            IRoleHelper roleHelper,
+            IStudentRepository studentRepository,
+            DataContext context,
+            ILogger<UserController> logger)
         {
             _userManager = userManager;
             _roleHelper = roleHelper;
+            _studentRepository = studentRepository;
+            _context = context;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index()
@@ -49,12 +62,32 @@ namespace SchoolManagementSystem.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create(int? studentId)
         {
-            var model = new CreateUserViewModel
+            var model = new CreateUserViewModel();
+
+            if (studentId.HasValue)
             {
-                Roles = GetRolesSelectList()
-            };
+                var student = await _studentRepository
+                    .GetByIdWithDetailsAsync(studentId.Value);
+
+                if (student == null)
+                    return NotFound();
+
+                if (student.AppUserId != null)
+                {
+                    TempData["Message"] = "This student already has a user account.";
+                    return RedirectToAction(nameof(Create));
+                }
+
+                model.StudentId = student.StudentId;
+                model.Role = AppRoles.Student;
+                model.FirstName = student.FirstName;
+                model.LastName = student.LastName;
+                model.Email = student.Email;
+            }
+
+            await LoadCreateOptionsAsync(model);
 
             return View(model);
         }
@@ -63,61 +96,153 @@ namespace SchoolManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateUserViewModel model)
         {
-            if (string.IsNullOrWhiteSpace(model.Role) || !AppRoles.All.Contains(model.Role))
-            {
-                ModelState.AddModelError(nameof(model.Role), "Please select a valid role.");
-            }
+            await LoadCreateOptionsAsync(model);
 
-            if (!ModelState.IsValid)
+            try
             {
-                model.Roles = GetRolesSelectList();
+                await using var transaction =
+                    await _context.Database.BeginTransactionAsync();
+
+                Student? student = null;
+
+                if (model.StudentId.HasValue)
+                {
+                    student = await _studentRepository
+                        .GetByIdWithDetailsAsync(model.StudentId.Value);
+
+                    if (student == null)
+                    {
+                        ModelState.AddModelError(string.Empty,
+                            "The selected student was not found.");
+
+                        return View(model);
+                    }
+
+                    if (student.AppUserId != null)
+                    {
+                        ModelState.AddModelError(string.Empty,
+                            "This student already has a user account.");
+
+                        return View(model);
+                    }
+
+                    model.Role = AppRoles.Student;
+                    model.FirstName = student.FirstName;
+                    model.LastName = student.LastName;
+                    model.Email = student.Email;
+
+                    ModelState.Remove(nameof(model.Role));
+                    ModelState.Remove(nameof(model.FirstName));
+                    ModelState.Remove(nameof(model.LastName));
+                    ModelState.Remove(nameof(model.Email));
+
+                    TryValidateModel(model);
+                }
+                else
+                {
+                    if (string.IsNullOrWhiteSpace(model.Role) ||
+                        !AppRoles.All.Contains(model.Role))
+                    {
+                        ModelState.AddModelError(nameof(model.Role),
+                            "Please select a valid role.");
+                    }
+                    else if (model.Role == AppRoles.Student)
+                    {
+                        ModelState.AddModelError(nameof(model.Role),
+                            "Please select a student from the pending students panel.");
+                    }
+                }
+
+                if (!ModelState.IsValid)
+                    return View(model);
+
+                var appUser = new AppUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName
+                };
+
+                var createResult = await _userManager.CreateAsync(appUser);
+
+                if (!createResult.Succeeded)
+                {
+                    foreach (var error in createResult.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+
+                    return View(model);
+                }
+
+                var roleResult = await _roleHelper
+                    .AddUserToRoleAsync(appUser, model.Role);
+
+                if (!roleResult.Succeeded)
+                {
+                    foreach (var error in roleResult.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+
+                    return View(model);
+                }
+
+                if (student != null)
+                {
+                    student.AppUserId = appUser.Id;
+
+                    _studentRepository.Update(student);
+                    await _studentRepository.SaveChangesAsync();
+                }
+
+                await transaction.CommitAsync();
+
+                TempData["Message"] = "User account created successfully.";
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Failed to create a user account for student {StudentId}.",
+                    model.StudentId);
+
+                ModelState.AddModelError(string.Empty,
+                    "The user account could not be created. Please try again.");
+
                 return View(model);
             }
-
-            var appUser = new AppUser
-            {
-                UserName = model.Email,
-                Email = model.Email,
-                FirstName = model.FirstName,
-                LastName = model.LastName
-            };
-
-            var result = await _userManager.CreateAsync(appUser);
-
-            if (!result.Succeeded)
-            {
-                foreach (var error in result.Errors)
-                    ModelState.AddModelError(string.Empty, error.Description);
-
-                model.Roles = GetRolesSelectList();
-                return View(model);
-            }
-
-            var roleResult = await _roleHelper.AddUserToRoleAsync(appUser, model.Role);
-
-            if (!roleResult.Succeeded)
-            {
-                await _userManager.DeleteAsync(appUser);
-
-                foreach (var error in roleResult.Errors)
-                    ModelState.AddModelError(string.Empty, error.Description);
-
-                model.Roles = GetRolesSelectList();
-                return View(model);
-            }
-
-            TempData["Message"] = "User account created successfully.";
-
-            return RedirectToAction(nameof(Index));
         }
 
         private IEnumerable<SelectListItem> GetRolesSelectList()
         {
-            return AppRoles.All.Select(role => new SelectListItem
-            {
-                Value = role,
-                Text = role
-            });
+            return AppRoles.All
+                .Where(role => role != AppRoles.Student)
+                .Select(role => new SelectListItem
+                {
+                    Value = role,
+                    Text = role
+                });
+        }
+
+        private async Task LoadCreateOptionsAsync(CreateUserViewModel model)
+        {
+            model.Roles = GetRolesSelectList();
+
+            var students = await _studentRepository
+                .GetStudentsWithoutAccountAsync();
+
+            model.PendingStudents = students.Select(student =>
+                new PendingStudentViewModel
+                {
+                    StudentId = student.StudentId,
+                    FirstName = student.FirstName,
+                    LastName = student.LastName,
+                    Email = student.Email
+                })
+                .ToList();
         }
     }
 }

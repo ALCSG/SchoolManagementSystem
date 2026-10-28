@@ -21,5 +21,13 @@ namespace SchoolManagementSystem.Data.Repository
                 .Include(s => s.Enrollments)
                     .ThenInclude(e => e.Subject)
                 .FirstOrDefaultAsync(s => s.StudentId == id);
+
+        public async Task<IEnumerable<Student>> GetStudentsWithoutAccountAsync()
+            => await _context.Students
+                .AsNoTracking()
+                .Where(s => s.AppUserId == null)
+                .OrderBy(s => s.FirstName)
+                .ThenBy(s => s.LastName)
+                .ToListAsync();
     }
 }

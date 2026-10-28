@@ -5,6 +5,8 @@ namespace SchoolManagementSystem.Models
 {
     public class CreateUserViewModel
     {
+        public int? StudentId { get; set; }
+
         [Required]
         [Display(Name = "Role")]
         public string Role { get; set; } = string.Empty;
@@ -22,5 +24,7 @@ namespace SchoolManagementSystem.Models
         [Required, EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; } = string.Empty;
+
+        public IEnumerable<PendingStudentViewModel>? PendingStudents { get; set; }
     }
 }
