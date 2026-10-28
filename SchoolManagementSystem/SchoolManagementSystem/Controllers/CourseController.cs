@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementSystem.Data.Entities;
 using SchoolManagementSystem.Data.Interface;
+using SchoolManagementSystem.Helpers;
 using SchoolManagementSystem.Models;
 
 namespace SchoolManagementSystem.Controllers
 {
+    [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Employee)]
     public class CourseController : Controller
     {
         private readonly ICourseRepository _courseRepository;
@@ -24,9 +27,30 @@ namespace SchoolManagementSystem.Controllers
             return View(courses);
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> Catalog()
+        {
+            var courses = await _courseRepository.GetAllWithDetailsAsync();
+
+            return View(courses);
+        }
+
         public async Task<IActionResult> Details(int id)
         {
             var course = await _courseRepository.GetByIdWithDetailsAsync(id);
+            if (course == null)
+                return NotFound();
+
+            return View(course);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> PublicDetails(int id)
+        {
+            var course = await _courseRepository.GetByIdWithDetailsAsync(id);
+
             if (course == null)
                 return NotFound();
 

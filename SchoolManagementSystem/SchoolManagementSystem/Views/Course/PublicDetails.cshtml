@@ -1,0 +1,87 @@
+﻿@model SchoolManagementSystem.Data.Entities.Course
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="mb-4">
+    <h1 class="h3 mb-2">@Model.Name</h1>
+
+    <p class="text-muted mb-0">
+        Explore the subjects and classes associated with this course.
+    </p>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <section class="card shadow-sm">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center gap-2 mb-4">
+                    <h2 class="h5 mb-0">Subjects</h2>
+
+                    <span class="badge bg-secondary">
+                        @Model.Subjects.Count
+                    </span>
+                </div>
+
+                @if (!Model.Subjects.Any())
+                {
+                    <p class="text-muted mb-0">
+                        There is no subject information available for this course yet.
+                    </p>
+                }
+                else
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var subject in Model.Subjects.OrderBy(s => s.Name))
+                        {
+                            <li class="list-group-item px-0">
+                                @subject.Name
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </section>
+    </div>
+
+    <div class="col-lg-4">
+        <section class="card shadow-sm">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center gap-2 mb-4">
+                    <h2 class="h5 mb-0">Classes</h2>
+
+                    <span class="badge bg-secondary">
+                        @Model.Groups.Count
+                    </span>
+                </div>
+
+                @if (!Model.Groups.Any())
+                {
+                    <p class="text-muted mb-0">
+                        There are no classes listed for this course at the moment.
+                    </p>
+                }
+                else
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var group in Model.Groups.OrderBy(g => g.Description))
+                        {
+                            <li class="list-group-item px-0">
+                                @group.Description
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </section>
+    </div>
+</div>
+
+<div class="mt-4 mb-4">
+    <a asp-controller="Course"
+       asp-action="Catalog"
+       class="btn btn-outline-secondary btn-sm">
+        Back to courses
+    </a>
+</div>

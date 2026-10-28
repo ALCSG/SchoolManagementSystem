@@ -154,3 +154,40 @@ body {
 .pending-students-table tr.student-selected .text-muted {
     color: #dce6ef !important;
 }
+
+/* Homepage: feature cards */
+.home-feature-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 16px rgba(15, 40, 65, 0.05);
+}
+
+.home-feature-label {
+    color: #155b91;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+}
+
+.home-feature-card h3 {
+    color: #163550;
+}
+
+.home-about-section {
+    padding: clamp(1.5rem, 4vw, 3rem);
+    border: 1px solid #e5edf4;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f3f7fb, #edf4fa);
+}
+
+    .home-about-section h2,
+    .home-about-section h3 {
+        color: #163550;
+    }
+
+.home-about-number {
+    color: #155b91;
+    font-size: 1.5rem;
+    font-weight: 700;
+}

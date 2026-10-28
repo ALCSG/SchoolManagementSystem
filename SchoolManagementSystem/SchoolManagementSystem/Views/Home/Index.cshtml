@@ -21,6 +21,13 @@
 
 @if (slides.Any())
 {
+    <div class="mb-4">
+        <h2 class="h3 mb-2">Explore our courses</h2>
+        <p class="text-muted mb-0">
+            Discover our training programmes and the subjects you can study.
+        </p>
+    </div>
+
     <ejs-carousel id="coursesCarousel"
                   cssClass="courses-carousel"
                   dataSource="@slides"
@@ -32,8 +39,171 @@
     </ejs-carousel>
 
     <div class="text-center mt-4">
-        <a asp-controller="Home" asp-action="Courses" class="btn btn-outline-primary btn-lg">View all courses</a>
+        <a asp-controller="Course" asp-action="Catalog" class="btn btn-outline-primary">View all courses</a>
     </div>
+    <section class="home-explore-section my-5"
+             aria-labelledby="explore-school-heading">
+        <div class="mb-4">
+            <h2 id="explore-school-heading" class="h3 mb-2">
+                Explore the school
+            </h2>
+            <p class="text-muted mb-0">
+                Find your next course, explore our classes or access your account.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card home-feature-card h-100">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <span class="home-feature-label mb-3">
+                            LEARN
+                        </span>
+
+                        <h3 class="h5 mb-3">Courses</h3>
+
+                        <p class="text-muted mb-4">
+                            Discover our training programmes and explore
+                            the subjects included in each course.
+                        </p>
+
+                        <a asp-controller="Course"
+                           asp-action="Catalog"
+                           class="btn btn-outline-primary mt-auto align-self-start">
+                            Browse courses
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card home-feature-card h-100">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <span class="home-feature-label mb-3">
+                            DISCOVER
+                        </span>
+
+                        <h3 class="h5 mb-3">Classes</h3>
+
+                        <p class="text-muted mb-4">
+                            Explore our classes and find out
+                            which courses and subjects they belong to.
+                        </p>
+
+                        <a asp-controller="ClassGroup"
+                           asp-action="Index"
+                           class="btn btn-outline-primary mt-auto align-self-start">
+                            Browse classes
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card home-feature-card h-100">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <span class="home-feature-label mb-3">
+                            CONNECT
+                        </span>
+
+                        <h3 class="h5 mb-3">Your account</h3>
+
+                        <p class="text-muted mb-4">
+                            Already have an account?
+                            Sign in to access your school workspace.
+                        </p>
+
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <div class="mt-auto">
+                                <span class="badge bg-success">
+                                    Signed in
+                                </span>
+
+                                <p class="text-muted small mt-2 mb-0">
+                                    Use the navigation menu to access your workspace.
+                                </p>
+                            </div>
+                        }
+                        else
+                        {
+                            <a asp-controller="Account"
+                               asp-action="Login"
+                               class="btn btn-primary mt-auto align-self-start">
+                                Sign in
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="home-about-section mb-5"
+             aria-labelledby="about-platform-heading">
+        <div class="row g-4 align-items-center">
+            <div class="col-lg-5">
+                <span class="home-feature-label d-inline-block mb-3">
+                    OUR PLATFORM
+                </span>
+
+                <h2 id="about-platform-heading" class="h3 mb-3">
+                    Your school, connected
+                </h2>
+
+                <p class="text-muted mb-0">
+                    A shared space for discovering our educational offering
+                    and connecting students with their school community.
+                </p>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="row g-4">
+                    <div class="col-sm-4">
+                        <div class="home-about-number mb-2"
+                             aria-hidden="true">
+                            01
+                        </div>
+
+                        <h3 class="h6">Explore</h3>
+
+                        <p class="text-muted small mb-0">
+                            Discover courses and the subjects that make up
+                            each programme.
+                        </p>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <div class="home-about-number mb-2"
+                             aria-hidden="true">
+                            02
+                        </div>
+
+                        <h3 class="h6">Discover</h3>
+
+                        <p class="text-muted small mb-0">
+                            Find classes and explore their associated courses.
+                        </p>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <div class="home-about-number mb-2"
+                             aria-hidden="true">
+                            03
+                        </div>
+
+                        <h3 class="h6">Connect</h3>
+
+                        <p class="text-muted small mb-0">
+                            Access your account and stay connected
+                            with your school.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
 }
 else
 {

@@ -1,0 +1,87 @@
+﻿@model IEnumerable<SchoolManagementSystem.Data.Entities.Course>
+
+@{
+    ViewData["Title"] = "Course Catalog";
+}
+
+<div class="mb-4">
+    <h1 class="h3 mb-2">Explore our courses</h1>
+    <p class="text-muted mb-0">
+        Discover our training programmes and explore their subjects and classes.
+    </p>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info" role="alert">
+        There are no courses available to display at the moment.
+    </div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var course in Model)
+        {
+            <div class="col-md-6 col-xl-4">
+                <article class="card h-100 shadow-sm">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <span class="text-muted small text-uppercase mb-2">
+                            Training programme
+                        </span>
+
+                        <h2 class="h5 mb-3">
+                            @course.Name
+                        </h2>
+
+                        <div class="d-flex flex-wrap gap-2 mb-4">
+                            <span class="badge bg-light text-dark border">
+                                @course.Subjects.Count
+                                @(course.Subjects.Count == 1 ? "subject" : "subjects")
+                            </span>
+
+                            <span class="badge bg-light text-dark border">
+                                @course.Groups.Count
+                                @(course.Groups.Count == 1 ? "class" : "classes")
+                            </span>
+                        </div>
+
+                        @if (course.Subjects.Any())
+                        {
+                            <h3 class="h6">Subjects include</h3>
+
+                            <ul class="text-muted small ps-3 mb-4">
+                                @foreach (var subject in course.Subjects
+                                    .OrderBy(s => s.Name)
+                                    .Take(4))
+                                {
+                                    <li class="mb-1">@subject.Name</li>
+                                }
+                            </ul>
+
+                            @if (course.Subjects.Count > 4)
+                            {
+                                <p class="text-muted small mb-4">
+                                    And @(course.Subjects.Count - 4) more.
+                                </p>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted small mb-4">
+                                Subject information will be available soon.
+                            </p>
+                        }
+
+                        <a asp-controller="Course"
+                           asp-action="PublicDetails"
+                           asp-route-id="@course.CourseId"
+                           class="btn btn-outline-primary mt-auto align-self-start"
+                           aria-label="@($"View course: {course.Name}")">
+                            View course
+                        </a>
+                    </div>
+                </article>
+            </div>
+        }
+    </div>
+}
