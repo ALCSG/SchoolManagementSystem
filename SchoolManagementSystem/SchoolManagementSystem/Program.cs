@@ -23,6 +23,7 @@ namespace SchoolManagementSystem
 
             builder.Services.AddIdentity<AppUser, IdentityRole>(config =>
             {
+                config.User.RequireUniqueEmail = true;
                 config.SignIn.RequireConfirmedEmail = false;
             })
             .AddEntityFrameworkStores<DataContext>()
