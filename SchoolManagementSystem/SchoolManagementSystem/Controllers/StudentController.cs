@@ -15,20 +15,20 @@ namespace SchoolManagementSystem.Controllers
         private readonly IClassGroupRepository _classGroupRepository;
         private readonly UserManager<AppUser> _userManager;
         private readonly IWebHostEnvironment _environment;
-        private readonly IRoleHelper _roleHelper;
+        private readonly IAlertRepository _alertRepository;
 
         public StudentController(
             IStudentRepository studentRepository,
             IClassGroupRepository classGroupRepository,
             UserManager<AppUser> userManager,
             IWebHostEnvironment environment,
-            IRoleHelper roleHelper)
+            IAlertRepository alertRepository)
         {
             _studentRepository = studentRepository;
             _classGroupRepository = classGroupRepository;
             _userManager = userManager;
             _environment = environment;
-            _roleHelper = roleHelper;
+            _alertRepository = alertRepository;
         }
 
         public async Task<IActionResult> Index()
@@ -61,64 +61,47 @@ namespace SchoolManagementSystem.Controllers
                 return View(model);
             }
 
-            var appUser = new AppUser
-            {
-                UserName = model.Email,
-                Email = model.Email,
-                FirstName = model.FirstName,
-                LastName = model.LastName
-            };
-
-            // TODO: replace with a secure generated password + email flow
-            var tempPassword = "Temp#12345";
-            var result = await _userManager.CreateAsync(appUser, tempPassword);
-
-            if (!result.Succeeded)
-            {
-                foreach (var error in result.Errors)
-                    ModelState.AddModelError(string.Empty, error.Description);
-
-                model.ClassGroups = await GetClassGroupsSelectListAsync();
-                return View(model);
-            }
-
-            var roleResult = await _roleHelper.AddUserToRoleAsync(appUser, AppRoles.Student);
-
-            if (!roleResult.Succeeded)
-            {
-                await _userManager.DeleteAsync(appUser);
-
-                foreach (var error in roleResult.Errors)
-                    ModelState.AddModelError(string.Empty, error.Description);
-
-                model.ClassGroups = await GetClassGroupsSelectListAsync();
-                return View(model);
-            }
-
             try
             {
                 var photoPath = await SavePhotoAsync(model.PhotoFile!);
 
                 var student = new Student
                 {
-                    AppUserId = appUser.Id,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Email = model.Email,
                     ClassGroupId = model.ClassGroupId,
-                    StudentPhotoPath = photoPath
+                    StudentPhotoPath = photoPath,
+                    AppUserId = null
                 };
 
                 await _studentRepository.AddAsync(student);
                 await _studentRepository.SaveChangesAsync();
+
+                var alert = new Alert
+                {
+                    Title = "Student account required",
+                    Message = $"Create a user account for student {student.FirstName} {student.LastName}.",
+                    ReportedByUserId = _userManager.GetUserId(User)!,
+                    StudentId = student.StudentId,
+                    IsResolved = false,
+                    CreatedAt = DateTime.Now
+                };
+
+                await _alertRepository.AddAsync(alert);
+                await _alertRepository.SaveChangesAsync();
+
+                TempData["Message"] = "Student created successfully. An account request was sent to the administrator.";
+
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception)
             {
-                await _userManager.DeleteAsync(appUser);
-
                 ModelState.AddModelError(string.Empty, "The student could not be created. Please try again.");
+
                 model.ClassGroups = await GetClassGroupsSelectListAsync();
                 return View(model);
             }
-
-            return RedirectToAction(nameof(Index));
         }
 
         private async Task<string> SavePhotoAsync(IFormFile file)
@@ -157,9 +140,9 @@ namespace SchoolManagementSystem.Controllers
             var model = new StudentViewModel
             {
                 StudentId = student.StudentId,
-                FirstName = student.AppUser.FirstName,
-                LastName = student.AppUser.LastName,
-                Email = student.AppUser.Email!,
+                FirstName = student.FirstName,
+                LastName = student.LastName,
+                Email = student.Email,
                 ClassGroupId = student.ClassGroupId,
                 CurrentPhotoPath = student.StudentPhotoPath,
                 ClassGroups = await GetClassGroupsSelectListAsync()
@@ -183,26 +166,15 @@ namespace SchoolManagementSystem.Controllers
             if (student == null)
                 return NotFound();
 
-            student.AppUser.FirstName = model.FirstName;
-            student.AppUser.LastName = model.LastName;
-            student.AppUser.Email = model.Email;
-            student.AppUser.UserName = model.Email;
-
-            var userUpdateResult = await _userManager.UpdateAsync(student.AppUser);
-
-            if (!userUpdateResult.Succeeded)
-            {
-                foreach (var error in userUpdateResult.Errors)
-                    ModelState.AddModelError(string.Empty, error.Description);
-
-                model.ClassGroups = await GetClassGroupsSelectListAsync();
-                return View(model);
-            }
-
+            student.FirstName = model.FirstName;
+            student.LastName = model.LastName;
+            student.Email = model.Email;
             student.ClassGroupId = model.ClassGroupId;
 
-            if(model.PhotoFile != null && model.PhotoFile.Length > 0)
+            if (model.PhotoFile != null && model.PhotoFile.Length > 0)
+            {
                 student.StudentPhotoPath = await SavePhotoAsync(model.PhotoFile);
+            }
 
             _studentRepository.Update(student);
             await _studentRepository.SaveChangesAsync();
@@ -242,6 +214,7 @@ namespace SchoolManagementSystem.Controllers
             {
                 ModelState.AddModelError(string.Empty,
                     "This student cannot be deleted because they still have enrollments. Remove the enrollments first.");
+
                 return View("Delete", student);
             }
 
@@ -252,23 +225,29 @@ namespace SchoolManagementSystem.Controllers
                 _studentRepository.Delete(student);
                 await _studentRepository.SaveChangesAsync();
 
-                var deleteResult = await _userManager.DeleteAsync(appUser);
-
-                if (!deleteResult.Succeeded)
+                if (appUser != null)
                 {
-                    ModelState.AddModelError(string.Empty,
-                        "The student was removed, but the login account could not be deleted.");
-                    return View("Delete", student);
+                    var deleteResult = await _userManager.DeleteAsync(appUser);
+
+                    if (!deleteResult.Succeeded)
+                    {
+                        ModelState.AddModelError(string.Empty,
+                            "The student was removed, but the login account could not be deleted.");
+
+                        return View("Delete", student);
+                    }
                 }
 
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex) when (ex is DbUpdateException or InvalidOperationException)
             {
-                ModelState.AddModelError(string.Empty, "This student could not be deleted because it is still in use.");
+                ModelState.AddModelError(string.Empty,
+                    "This student could not be deleted because it is still in use.");
+
                 return View("Delete", student);
             }
         }
     }
-    
+
 }

@@ -6,8 +6,10 @@ namespace SchoolManagementSystem.Models
     public class CreateUserViewModel
     {
         [Required]
-        [Display(Name = "Student")]
-        public int StudentId { get; set; }
+        [Display(Name = "Role")]
+        public string Role { get; set; } = string.Empty;
+
+        public IEnumerable<SelectListItem>? Roles { get; set; }
 
         [Required, MaxLength(50)]
         [Display(Name = "First Name")]
@@ -20,7 +22,5 @@ namespace SchoolManagementSystem.Models
         [Required, EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; } = string.Empty;
-
-        public IEnumerable<SelectListItem>? Students { get; set; }
     }
 }

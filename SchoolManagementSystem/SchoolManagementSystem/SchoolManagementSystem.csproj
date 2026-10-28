@@ -22,6 +22,7 @@
     <PackageReference Include="Syncfusion.AspNetCore.DropDowns" Version="35.1.39" />
     <PackageReference Include="Syncfusion.AspNetCore.Navigations" Version="35.1.39" />
     <PackageReference Include="Syncfusion.AspNetCore.Themes" Version="35.1.39" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.14" />
   </ItemGroup>
 
 </Project>

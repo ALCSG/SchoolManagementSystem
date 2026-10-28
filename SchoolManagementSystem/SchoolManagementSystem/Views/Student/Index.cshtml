@@ -24,7 +24,7 @@
         @foreach (var student in Model)
         {
             <tr>
-                <td>@student.AppUser.FirstName @student.AppUser.LastName</td>
+                <td>@student.FirstName @student.LastName</td>
                 <td>@student.ClassGroup.Description</td>
                 <td>@student.ClassGroup.Course?.Name</td>
                 <td>
