@@ -6,5 +6,6 @@ namespace SchoolManagementSystem.Data.Interface
     {
         Task<IEnumerable<Alert>> GetOpenAlertsWithReporterAsync();
         Task<IEnumerable<Alert>> GetClosedAlertsWithReporterAsync(int limit);
+        Task<Alert?> GetByIdWithDetailsAsync(int id);
     }
 }

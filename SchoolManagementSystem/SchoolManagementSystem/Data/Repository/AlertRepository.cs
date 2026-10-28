@@ -23,5 +23,11 @@ namespace SchoolManagementSystem.Data.Repository
                         .OrderByDescending(a => a.CreatedAt)
                         .Take(limit)
                         .ToListAsync();
-    }
-}
+
+        public async Task<Alert?> GetByIdWithDetailsAsync(int id)
+            => await _context.Alerts
+            .Include(a => a.ReportedBy)
+            .Include(a => a.Student)
+            .FirstOrDefaultAsync(a => a.AlertId == id);
+    } 
+}           

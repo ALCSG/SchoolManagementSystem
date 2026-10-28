@@ -55,6 +55,7 @@ namespace SchoolManagementSystem.Controllers
             {
                 var alert = new Alert
                 {
+                    Title = model.Title,
                     Message = model.Message,
                     ReportedByUserId = user
                 };
@@ -106,6 +107,18 @@ namespace SchoolManagementSystem.Controllers
             await _alertRepository.SaveChangesAsync();
 
             return RedirectToAction("Index", "Dashboard");
+        }
+
+        [HttpGet]
+        [Authorize(Roles = AppRoles.Admin)]
+        public async Task<IActionResult> Details(int id)
+        {
+            var alert = await _alertRepository.GetByIdWithDetailsAsync(id);
+
+            if (alert == null)
+                return NotFound();
+
+            return View(alert);
         }
     }
 }
