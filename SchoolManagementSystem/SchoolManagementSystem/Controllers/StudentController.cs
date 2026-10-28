@@ -81,7 +81,7 @@ namespace SchoolManagementSystem.Controllers
                 var alert = new Alert
                 {
                     Title = "Student account required",
-                    Message = $"Create a user account for student {student.FirstName} {student.LastName}.",
+                    Message = $"Create a user account for student {student.FirstName} {student.LastName} with email: {student.Email}.",
                     ReportedByUserId = _userManager.GetUserId(User)!,
                     StudentId = student.StudentId,
                     IsResolved = false,
