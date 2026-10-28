@@ -77,6 +77,7 @@ namespace SchoolManagementSystem
             }
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
             app.UseRouting();
 
             app.UseAuthentication();

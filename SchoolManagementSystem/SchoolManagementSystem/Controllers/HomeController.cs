@@ -56,5 +56,13 @@ namespace SchoolManagementSystem.Controllers
 
             return View(model);
         }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> Courses()
+        {
+            var courses = await _courseRepository.GetAllWithDetailsAsync();
+            return View(courses);
+        }
     }
 }

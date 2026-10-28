@@ -1,0 +1,62 @@
+﻿@model IEnumerable<SchoolManagementSystem.Data.Entities.Course>
+
+@{
+    ViewData["Title"] = "Courses";
+}
+
+<h1 class="mb-1">Available courses</h1>
+<p class="text-muted mb-4">The courses we offer, with their subjects and class groups.</p>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">There are no courses available yet.</p>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var course in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@course.Name</h5>
+
+                        <h6 class="mt-3">Subjects</h6>
+                        @if (course.Subjects.Any())
+                        {
+                            <ul class="mb-0">
+                                @foreach (var subject in course.Subjects.OrderBy(s => s.Name))
+                                {
+                                    <li>@subject.Name</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="text-muted small mb-0">No subjects yet.</p>
+                        }
+
+                        <h6 class="mt-3">Class groups</h6>
+                        @if (course.Groups.Any())
+                        {
+                            <ul class="mb-0">
+                                @foreach (var group in course.Groups.OrderBy(g => g.Description))
+                                {
+                                    <li>@group.Description</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="text-muted small mb-0">No class groups yet.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<div class="mt-4">
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Back</a>
+</div>
