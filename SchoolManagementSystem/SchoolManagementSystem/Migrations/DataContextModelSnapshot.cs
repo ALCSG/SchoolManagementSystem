@@ -193,9 +193,19 @@ namespace SchoolManagementSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int?>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.HasKey("AlertId");
 
                     b.HasIndex("ReportedByUserId");
+
+                    b.HasIndex("StudentId");
 
                     b.ToTable("Alerts");
                 });
@@ -361,11 +371,24 @@ namespace SchoolManagementSystem.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentId"));
 
                     b.Property<string>("AppUserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("ClassGroupId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("StudentPhotoPath")
                         .IsRequired()
@@ -475,7 +498,13 @@ namespace SchoolManagementSystem.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("SchoolManagementSystem.Data.Entities.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId");
+
                     b.Navigation("ReportedBy");
+
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("SchoolManagementSystem.Data.Entities.ClassGroup", b =>
@@ -513,8 +542,7 @@ namespace SchoolManagementSystem.Migrations
                     b.HasOne("SchoolManagementSystem.Data.Entities.AppUser", "AppUser")
                         .WithMany()
                         .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("SchoolManagementSystem.Data.Entities.ClassGroup", "ClassGroup")
                         .WithMany("Students")
