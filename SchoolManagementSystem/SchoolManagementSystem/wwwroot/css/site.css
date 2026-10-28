@@ -104,3 +104,39 @@ body {
     padding: 1rem 0;
     line-height: normal;
 }
+
+.courses-carousel {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background: linear-gradient(135deg, #09233f, #0b5fa5);
+    color: white;
+}
+
+    .courses-carousel .course-slide {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 2rem 4rem;
+    }
+
+        .courses-carousel .course-slide h3 {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .courses-carousel .course-slide p {
+            max-width: 40rem;
+            opacity: 0.9;
+        }
+
+    .courses-carousel .e-carousel-navigators .e-next .e-btn:not(:disabled) .e-btn-icon,
+    .courses-carousel .e-carousel-navigators .e-previous .e-btn:not(:disabled) .e-btn-icon {
+        color: #fff !important;
+    }
+
+    .courses-carousel .e-carousel-indicators .e-indicator-bars .e-indicator-bar:not(.e-active) .e-btn > div {
+        background-color: rgba(255, 255, 255, 0.6) !important;
+    }
