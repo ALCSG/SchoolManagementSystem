@@ -1,18 +1,20 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SchoolManagementSystem.Models
+public class ResetPasswordViewModel
 {
-    public class ResetPasswordViewModel
-    {
-        public int UserId { get; set; }
-        public string Token { get; set; }
+    [Required]
+    public string UserId { get; set; } = string.Empty;
 
-        [Required]
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
+    [Required]
+    public string Token { get; set; } = string.Empty;
 
-        [DataType(DataType.Password)]
-        [Compare(nameof(Password))]
-        public string ConfirmPassword { get; set; }
-    }
+    [Required]
+    [DataType(DataType.Password)]
+    public string Password { get; set; } = string.Empty;
+
+    [Required]
+    [DataType(DataType.Password)]
+    [Display(Name = "Confirm password")]
+    [Compare(nameof(Password), ErrorMessage = "The passwords do not match")]
+    public string ConfirmPassword { get; set; } = string.Empty;
 }

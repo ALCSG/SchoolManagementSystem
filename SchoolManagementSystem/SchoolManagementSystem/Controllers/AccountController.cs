@@ -13,13 +13,15 @@ namespace SchoolManagementSystem.Controllers
         private readonly SignInManager<AppUser> _signInManager;
         private readonly UserManager<AppUser> _userManager;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IMailHelper _mailHelper;
 
         public AccountController(SignInManager<AppUser> signInManager,
-            UserManager<AppUser> userManager, IWebHostEnvironment webHostEnvironment)
+            UserManager<AppUser> userManager, IWebHostEnvironment webHostEnvironment, IMailHelper mailHelper)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _webHostEnvironment = webHostEnvironment;
+            _mailHelper = mailHelper;
         }
 
         [HttpGet]
@@ -157,6 +159,54 @@ namespace SchoolManagementSystem.Controllers
             TempData["Message"] = "Changes saved successfully";
 
             return RedirectToAction(nameof(Profile));
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            var model = new ForgotPasswordViewModel();
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            if (user != null)
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                var link = Url.Action("ResetPassword", "Account", new { userId = user.Id, token }, protocol: Request.Scheme);
+
+                if (link != null)
+                    await _mailHelper.SendEmailAsync(model.Email, model.Email, "Password Reset", link);
+
+                var safeLink = System.Net.WebUtility.HtmlEncode(link);
+
+                var body = $@"
+                            <p>Hello {System.Net.WebUtility.HtmlEncode(user.FirstName)},</p>
+                            <p>Click the link below to choose a new password:</p>
+                            <p><a href=""{safeLink}"">Choose my password</a></p>
+                            <p>If you did not ask for this, you can ignore this message.</p>";
+
+                await _mailHelper.SendEmailAsync(user.Email!, $"{user.FirstName} {user.LastName}", "Password reset", body);
+
+                TempData["Message"] = "If the e-mail exists, we sent instructions to reset the password.";
+            }
+            else
+            {
+                TempData["Message"] = "If the e-mail exists, we sent instructions to reset the password.";
+            }
+
+            return RedirectToAction("Login");
         }
 
         private async Task<string> SaveProfilePhotoAsync(IFormFile file)
