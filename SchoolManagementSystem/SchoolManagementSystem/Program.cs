@@ -38,6 +38,8 @@ namespace SchoolManagementSystem
             builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
             builder.Services.AddScoped<IRoleHelper, RoleHelper>();
             builder.Services.AddScoped<IAlertRepository, AlertRepository>();
+            builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("Mail"));
+            builder.Services.AddScoped<IMailHelper, MailHelper>();
 
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(builder.Configuration["Syncfusion:LicenseKey"]);
 
