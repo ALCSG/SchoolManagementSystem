@@ -2,6 +2,18 @@
 
 @{
     ViewData["Title"] = "Class Group Details";
+
+    var activeStudents = Model.Students
+        .Where(s => !s.IsArchived)
+        .OrderBy(s => s.FirstName)
+        .ThenBy(s => s.LastName)
+        .ToList();
+
+    var archivedStudents = Model.Students
+        .Where(s => s.IsArchived)
+        .OrderBy(s => s.FirstName)
+        .ThenBy(s => s.LastName)
+        .ToList();
 }
 
 <h1>Class Group Details</h1>
@@ -12,29 +24,96 @@
     <dd class="col-sm-9">@Model.Description</dd>
 
     <dt class="col-sm-3">Course</dt>
-    <dd class="col-sm-9">@Model.Course.Name</dd>
+    <dd class="col-sm-9">
+        <a asp-controller="Course"
+           asp-action="Details"
+           asp-route-id="@Model.CourseId"
+           class="text-decoration-none">
+            @Model.Course.Name
+        </a>
+    </dd>
 </dl>
 
-<h4 class="mt-4">Students</h4>
-@if (Model.Students.Any())
-{
-    <ul>
-        @foreach (var student in Model.Students.OrderBy(s => s.FirstName))
-        {
-            <li>
-                <a asp-controller="Student" asp-action="Details" asp-route-id="@student.StudentId">
-                    @student.FirstName @student.LastName
-                </a>
-            </li>
-        }
-    </ul>
-}
-else
-{
-    <p class="text-muted">No students in this class group yet.</p>
-}
+<section class="mt-4">
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <h2 class="h4 mb-0">Active students</h2>
+        <span class="badge bg-primary">
+            @activeStudents.Count
+        </span>
+    </div>
 
-<div class="mt-3">
-    <a asp-action="Edit" asp-route-id="@Model.ClassGroupId" class="btn btn-primary">Edit</a>
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    @if (activeStudents.Any())
+    {
+        <ul class="list-group">
+            @foreach (var student in activeStudents)
+            {
+                <li class="list-group-item">
+                    <a asp-controller="Student"
+                       asp-action="Details"
+                       asp-route-id="@student.StudentId"
+                       class="text-decoration-none">
+                        @student.FirstName @student.LastName
+                    </a>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p class="text-muted">
+            No active students in this class group.
+        </p>
+    }
+</section>
+
+<section class="mt-4">
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <h2 class="h4 mb-0">Archived students</h2>
+        <span class="badge bg-secondary">
+            @archivedStudents.Count
+        </span>
+    </div>
+
+    @if (archivedStudents.Any())
+    {
+        <ul class="list-group">
+            @foreach (var student in archivedStudents)
+            {
+                <li class="list-group-item d-flex flex-wrap
+                    justify-content-between align-items-center gap-2">
+                    <a asp-controller="Student"
+                       asp-action="Details"
+                       asp-route-id="@student.StudentId"
+                       class="text-decoration-none">
+                        @student.FirstName @student.LastName
+                    </a>
+
+                    <span class="badge bg-secondary">
+                        Archived
+                    </span>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p class="text-muted">
+            No archived students in this class group.
+        </p>
+    }
+</section>
+
+<div class="mt-4">
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Edit"
+           asp-route-id="@Model.ClassGroupId"
+           class="btn btn-primary">
+            Edit
+        </a>
+    }
+
+    <a asp-action="Index" class="btn btn-secondary">
+        Back to List
+    </a>
 </div>
