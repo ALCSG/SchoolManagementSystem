@@ -19,11 +19,11 @@
 @if (Model.Students.Any())
 {
     <ul>
-        @foreach (var student in Model.Students.OrderBy(s => s.AppUser.FirstName))
+        @foreach (var student in Model.Students.OrderBy(s => s.FirstName))
         {
             <li>
                 <a asp-controller="Student" asp-action="Details" asp-route-id="@student.StudentId">
-                    @student.AppUser.FirstName @student.AppUser.LastName
+                    @student.FirstName @student.LastName
                 </a>
             </li>
         }

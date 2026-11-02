@@ -19,19 +19,21 @@ namespace SchoolManagementSystem.Controllers
         private readonly IStudentRepository _studentRepository;
         private readonly DataContext _context;
         private readonly ILogger<UserController> _logger;
+        private readonly IMailHelper _mailHelper;
 
         public UserController(
             UserManager<AppUser> userManager,
             IRoleHelper roleHelper,
             IStudentRepository studentRepository,
             DataContext context,
-            ILogger<UserController> logger)
+            ILogger<UserController> logger, IMailHelper mailHelper)
         {
             _userManager = userManager;
             _roleHelper = roleHelper;
             _studentRepository = studentRepository;
             _context = context;
             _logger = logger;
+            _mailHelper = mailHelper;
         }
 
         public async Task<IActionResult> Index()
@@ -198,6 +200,19 @@ namespace SchoolManagementSystem.Controllers
                 }
 
                 await transaction.CommitAsync();
+
+                var token = await _userManager.GeneratePasswordResetTokenAsync(appUser);
+                var link = Url.Action("ResetPassword", "Account", new { userId = appUser.Id, token }, protocol: Request.Scheme);
+
+                if (link != null)
+                {
+                    var body = $@"
+                            <p>Hello {System.Net.WebUtility.HtmlEncode(appUser.FirstName)},</p>
+                            <p>Click the link below to define your password:</p>
+                            <p><a href=""{link}"">Define my password</a></p>";
+
+                    await _mailHelper.SendEmailAsync(appUser.Email!, $"{appUser.FirstName} {appUser.LastName}", "Password definition", body);
+                }
 
                 TempData["Message"] = "User account created successfully.";
 
