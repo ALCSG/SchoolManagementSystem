@@ -220,23 +220,11 @@ namespace SchoolManagementSystem.Controllers
 
             try
             {
-                var appUser = student.AppUser;
+                student.IsArchived = true;
+                student.ArchivedAt = DateTime.UtcNow;
 
-                _studentRepository.Delete(student);
+                _studentRepository.Update(student);
                 await _studentRepository.SaveChangesAsync();
-
-                if (appUser != null)
-                {
-                    var deleteResult = await _userManager.DeleteAsync(appUser);
-
-                    if (!deleteResult.Succeeded)
-                    {
-                        ModelState.AddModelError(string.Empty,
-                            "The student was removed, but the login account could not be deleted.");
-
-                        return View("Delete", student);
-                    }
-                }
 
                 return RedirectToAction(nameof(Index));
             }
