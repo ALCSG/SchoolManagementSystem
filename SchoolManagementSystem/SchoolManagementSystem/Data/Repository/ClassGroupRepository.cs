@@ -11,7 +11,7 @@ namespace SchoolManagementSystem.Data.Repository
         public async Task<IEnumerable<ClassGroup>> GetAllWithDetailsAsync()
             => await _context.ClassGroups
                 .Include(g => g.Course)
-                .Include(g => g.Students)
+                .Include(g => g.Students.Where(s => !s.IsArchived))
                 .OrderBy(g => g.Course.Name)
                 .ThenBy(g => g.Description)
                 .ToListAsync();
