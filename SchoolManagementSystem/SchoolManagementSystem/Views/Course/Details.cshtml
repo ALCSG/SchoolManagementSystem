@@ -28,12 +28,20 @@ else
 }
 
 <h4 class="mt-4">Class Groups</h4>
+
 @if (Model.Groups.Any())
 {
     <ul>
-        @foreach (var group in Model.Groups)
+        @foreach (var group in Model.Groups.OrderBy(g => g.Description))
         {
-            <li>@group.Description</li>
+            <li>
+                <a asp-controller="ClassGroup"
+                   asp-action="Details"
+                   asp-route-id="@group.ClassGroupId"
+                   class="text-decoration-none">
+                    @group.Description
+                </a>
+            </li>
         }
     </ul>
 }
