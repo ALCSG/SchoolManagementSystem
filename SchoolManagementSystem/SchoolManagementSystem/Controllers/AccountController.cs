@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using SchoolManagementSystem.Data.Entities;
 using SchoolManagementSystem.Helpers;
 using SchoolManagementSystem.Models;
@@ -183,30 +184,73 @@ namespace SchoolManagementSystem.Controllers
             if (user != null)
             {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-
                 var link = Url.Action("ResetPassword", "Account", new { userId = user.Id, token }, protocol: Request.Scheme);
 
                 if (link != null)
-                    await _mailHelper.SendEmailAsync(model.Email, model.Email, "Password Reset", link);
-
-                var safeLink = System.Net.WebUtility.HtmlEncode(link);
-
-                var body = $@"
+                {
+                    var body = $@"
                             <p>Hello {System.Net.WebUtility.HtmlEncode(user.FirstName)},</p>
                             <p>Click the link below to choose a new password:</p>
-                            <p><a href=""{safeLink}"">Choose my password</a></p>
+                            <p><a href=""{link}"">Choose my password</a></p>
                             <p>If you did not ask for this, you can ignore this message.</p>";
 
-                await _mailHelper.SendEmailAsync(user.Email!, $"{user.FirstName} {user.LastName}", "Password reset", body);
+                    await _mailHelper.SendEmailAsync(user.Email!, $"{user.FirstName} {user.LastName}", "Password reset", body);
+                }
+            }
 
-                TempData["Message"] = "If the e-mail exists, we sent instructions to reset the password.";
-            }
-            else
-            {
-                TempData["Message"] = "If the e-mail exists, we sent instructions to reset the password.";
-            }
+            TempData["Message"] = "If the e-mail exists, we sent instructions to reset the password.";
 
             return RedirectToAction("Login");
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(string userId, string token)
+        {
+            if (userId.IsNullOrEmpty() || token.IsNullOrEmpty() )
+                return NotFound();
+
+            var model = new ResetPasswordViewModel
+            {
+                UserId = userId,
+                Token = token
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var user = await _userManager.FindByIdAsync(model.UserId);
+
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "Unable to reset the password. Please request a new reset link.");
+
+                return View(model);
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user,model.Token,model.Password);
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty,error.Description);
+                }
+
+                return View(model);
+            }
+
+            TempData["Message"] = "Password reset successfully. Please sign in with your new password.";
+
+            return RedirectToAction(nameof(Login));
         }
 
         private async Task<string> SaveProfilePhotoAsync(IFormFile file)
