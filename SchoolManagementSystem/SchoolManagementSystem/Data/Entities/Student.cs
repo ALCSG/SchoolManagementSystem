@@ -29,6 +29,10 @@ namespace SchoolManagementSystem.Data.Entities
 
         public ClassGroup ClassGroup { get; set; }
 
+        public bool IsArchived { get; set; }
+
+        public DateTime? ArchivedAt { get; set; }
+
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
     }
 }
