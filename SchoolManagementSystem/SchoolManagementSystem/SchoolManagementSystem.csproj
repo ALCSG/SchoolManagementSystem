@@ -13,16 +13,17 @@
 
   <ItemGroup>
     <PackageReference Include="MailKit" Version="4.18.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.12" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.12" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.12" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.12">
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.14">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Syncfusion.AspNetCore.DropDowns" Version="35.1.39" />
-    <PackageReference Include="Syncfusion.AspNetCore.Navigations" Version="35.1.39" />
-    <PackageReference Include="Syncfusion.AspNetCore.Themes" Version="35.1.39" />
+    <PackageReference Include="Syncfusion.AspNetCore.DropDowns" Version="35.1.43" />
+    <PackageReference Include="Syncfusion.AspNetCore.Grid" Version="35.1.43" />
+    <PackageReference Include="Syncfusion.AspNetCore.Navigations" Version="35.1.43" />
+    <PackageReference Include="Syncfusion.AspNetCore.Themes" Version="35.1.43" />
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.14" />
   </ItemGroup>
 
