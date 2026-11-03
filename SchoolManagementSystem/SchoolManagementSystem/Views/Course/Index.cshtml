@@ -2,36 +2,100 @@
 
 @{
     ViewData["Title"] = "Courses";
+
+    var courses = Model.Select(course => new
+    {
+        CourseId = course.CourseId,
+        Name = course.Name,
+        ClassGroupCount = course.Groups.Count,
+        SubjectCount = course.Subjects.Count,
+        DetailsUrl = Url.Action("Details", "Course",
+            new { id = course.CourseId }),
+        EditUrl = Url.Action("Edit", "Course",
+            new { id = course.CourseId }),
+        DeleteUrl = Url.Action("Delete", "Course",
+            new { id = course.CourseId })
+    }).ToList();
 }
 
-<h1>Courses</h1>
+<div class="d-flex flex-wrap justify-content-between
+            align-items-center gap-3 mb-4">
+    <h1 class="h3 mb-0">Courses</h1>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">New Course</a>
-</p>
+    <a asp-action="Create" class="btn btn-primary">
+        New Course
+    </a>
+</div>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Class Groups</th>
-            <th>Subjects</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var course in Model)
-        {
-            <tr>
-                <td>@course.Name</td>
-                <td>@course.Groups.Count</td>
-                <td>@course.Subjects.Count</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@course.CourseId" class="btn btn-sm btn-outline-secondary">Details</a>
-                    <a asp-action="Edit" asp-route-id="@course.CourseId" class="btn btn-sm btn-outline-primary">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@course.CourseId" class="btn btn-sm btn-outline-danger">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<script id="courseActionsTemplate" type="text/x-template">
+    <div class="d-flex flex-wrap gap-1">
+        <a href="${DetailsUrl}"
+           class="btn btn-sm btn-outline-secondary">
+            Details
+        </a>
+
+        <a href="${EditUrl}"
+           class="btn btn-sm btn-outline-primary">
+            Edit
+        </a>
+
+        <a href="${DeleteUrl}"
+           class="btn btn-sm btn-outline-danger">
+            Delete
+        </a>
+    </div>
+</script>
+
+<ejs-grid id="CoursesGrid"
+          dataSource="@courses"
+          allowPaging="true"
+          allowSorting="true"
+          allowFiltering="true"
+          toolbar="@(new List<string> { "Search" })"
+          width="100%">
+
+    <e-grid-pagesettings pageSize="10"
+                         pageCount="5">
+    </e-grid-pagesettings>
+
+    <e-grid-filtersettings type="Menu">
+    </e-grid-filtersettings>
+
+    <e-grid-searchsettings fields="@(new string[] { "Name" })"
+                           operator="contains"
+                           ignoreCase="true">
+    </e-grid-searchsettings>
+
+    <e-grid-columns>
+        <e-grid-column field="CourseId"
+                       isPrimaryKey="true"
+                       visible="false">
+        </e-grid-column>
+
+        <e-grid-column field="Name"
+                       headerText="Name"
+                       width="250">
+        </e-grid-column>
+
+        <e-grid-column field="ClassGroupCount"
+                       headerText="Class Groups"
+                       type="number"
+                       textAlign="Center"
+                       width="140">
+        </e-grid-column>
+
+        <e-grid-column field="SubjectCount"
+                       headerText="Subjects"
+                       type="number"
+                       textAlign="Center"
+                       width="120">
+        </e-grid-column>
+
+        <e-grid-column headerText="Actions"
+                       template="#courseActionsTemplate"
+                       allowSorting="false"
+                       allowFiltering="false"
+                       width="260">
+        </e-grid-column>
+    </e-grid-columns>
+</ejs-grid>
