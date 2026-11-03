@@ -12,6 +12,7 @@ namespace SchoolManagementSystem.Data.Repository
             => await _context.Students
                 .Include(s => s.AppUser)
                 .Include(s => s.ClassGroup)
+                    .ThenInclude(c => c.Course)
                 .ToListAsync();
 
         public async Task<Student?> GetByAppUserIdWithDetailsAsync(string appUserId)
