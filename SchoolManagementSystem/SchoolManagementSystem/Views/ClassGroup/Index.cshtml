@@ -2,36 +2,108 @@
 
 @{
     ViewData["Title"] = "Class Groups";
+
+    var classGroups = Model.Select(group => new
+    {
+        ClassGroupId = group.ClassGroupId,
+        Description = group.Description,
+        CourseName = group.Course?.Name ?? "Not available",
+        ActiveStudentCount = group.Students.Count(s => !s.IsArchived),
+        DetailsUrl = Url.Action("Details", "ClassGroup",
+            new { id = group.ClassGroupId }),
+        EditUrl = Url.Action("Edit", "ClassGroup",
+            new { id = group.ClassGroupId }),
+        DeleteUrl = Url.Action("Delete", "ClassGroup",
+            new { id = group.ClassGroupId })
+    }).ToList();
 }
 
-<h1>Class Groups</h1>
+<div class="d-flex flex-wrap justify-content-between
+            align-items-center gap-3 mb-4">
+    <h1 class="h3 mb-0">Class Groups</h1>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">New Class Group</a>
-</p>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Create" class="btn btn-primary">
+            New Class Group
+        </a>
+    }
+</div>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Description</th>
-            <th>Course</th>
-            <th>Students</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var group in Model)
+<script id="classGroupActionsTemplate" type="text/x-template">
+    <div class="d-flex flex-wrap gap-1">
+        <a href="${DetailsUrl}"
+           class="btn btn-sm btn-outline-secondary">
+            Details
+        </a>
+
+        @if (User.IsInRole("Admin"))
         {
-            <tr>
-                <td>@group.Description</td>
-                <td>@group.Course.Name</td>
-                <td>@group.Students.Count</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@group.ClassGroupId" class="btn btn-sm btn-outline-secondary">Details</a>
-                    <a asp-action="Edit" asp-route-id="@group.ClassGroupId" class="btn btn-sm btn-outline-primary">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@group.ClassGroupId" class="btn btn-sm btn-outline-danger">Delete</a>
-                </td>
-            </tr>
+            <a href="${EditUrl}"
+               class="btn btn-sm btn-outline-primary">
+                Edit
+            </a>
+
+            <a href="${DeleteUrl}"
+               class="btn btn-sm btn-outline-danger">
+                Delete
+            </a>
         }
-    </tbody>
-</table>
+    </div>
+</script>
+
+<ejs-grid id="ClassGroupsGrid"
+          dataSource="@classGroups"
+          allowPaging="true"
+          allowSorting="true"
+          allowFiltering="true"
+          toolbar="@(new List<string> { "Search" })"
+          width="100%">
+
+    <e-grid-pagesettings pageSize="10"
+                         pageCount="5">
+    </e-grid-pagesettings>
+
+    <e-grid-filtersettings type="Menu">
+    </e-grid-filtersettings>
+
+    <e-grid-searchsettings fields="@(new string[]
+                           {
+                               "Description",
+                               "CourseName"
+                           })"
+                           operator="contains"
+                           ignoreCase="true">
+    </e-grid-searchsettings>
+
+    <e-grid-columns>
+        <e-grid-column field="ClassGroupId"
+                       isPrimaryKey="true"
+                       visible="false">
+        </e-grid-column>
+
+        <e-grid-column field="Description"
+                       headerText="Description"
+                       width="230">
+        </e-grid-column>
+
+        <e-grid-column field="CourseName"
+                       headerText="Course"
+                       width="230">
+        </e-grid-column>
+
+        <e-grid-column field="ActiveStudentCount"
+                       headerText="Active Students"
+                       type="number"
+                       textAlign="Center"
+                       width="160">
+        </e-grid-column>
+
+        <e-grid-column headerText="Actions"
+                       template="#classGroupActionsTemplate"
+                       allowSorting="false"
+                       allowFiltering="false"
+                       width="260">
+        </e-grid-column>
+    </e-grid-columns>
+</ejs-grid>
