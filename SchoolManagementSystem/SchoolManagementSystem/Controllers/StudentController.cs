@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AspNetCoreGeneratedDocument;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +8,7 @@ using SchoolManagementSystem.Data.Entities;
 using SchoolManagementSystem.Data.Interface;
 using SchoolManagementSystem.Helpers;
 using SchoolManagementSystem.Models;
+using System.Security.Claims;
 
 namespace SchoolManagementSystem.Controllers
 {
@@ -235,6 +238,23 @@ namespace SchoolManagementSystem.Controllers
 
                 return View("Delete", student);
             }
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Student")]
+        public async Task<IActionResult> MyLearning()
+        {
+            var appUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(appUserId))
+                return Forbid();
+
+            var student = await _studentRepository.GetByAppUserIdWithDetailsAsync(appUserId);
+
+            if(student == null) 
+                return NotFound();
+
+            return View(student);
         }
     }
 

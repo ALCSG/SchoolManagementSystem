@@ -8,5 +8,6 @@ namespace SchoolManagementSystem.Data.Interface
         Task<IEnumerable<Student>> GetAllWithDetailsAsync();
         Task<Student?> GetByIdWithDetailsAsync(int id);
         Task<IEnumerable<Student>> GetStudentsWithoutAccountAsync();
+        Task<Student?> GetByAppUserIdWithDetailsAsync(string appUserId);
     }
 }

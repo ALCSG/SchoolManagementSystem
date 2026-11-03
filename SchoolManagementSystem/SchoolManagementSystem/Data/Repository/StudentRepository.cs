@@ -14,6 +14,15 @@ namespace SchoolManagementSystem.Data.Repository
                 .Include(s => s.ClassGroup)
                 .ToListAsync();
 
+        public async Task<Student?> GetByAppUserIdWithDetailsAsync(string appUserId)
+            => await _context.Students
+                .AsNoTracking()
+                .Include(s => s.ClassGroup)
+                    .ThenInclude(g => g.Course)
+                .Include(s => s.Enrollments)
+                    .ThenInclude(e => e.Subject)
+                .FirstOrDefaultAsync(s => s.AppUserId == appUserId && !s.IsArchived);
+
         public async Task<Student?> GetByIdWithDetailsAsync(int id)
             => await _context.Students
                 .Include(s => s.AppUser)
