@@ -15,6 +15,9 @@ namespace SchoolManagementSystem.Models
         [Display(Name = "Subject")]
         public int SubjectId { get; set; }
 
+        [Display(Name = "Subjects")]
+        public List<int> SelectedSubjectIds { get; set; } = new();
+
         [Display(Name = "Subject")]
         public string? SubjectName { get; set; }
 

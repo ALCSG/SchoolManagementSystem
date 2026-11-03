@@ -33,39 +33,69 @@ namespace SchoolManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(EnrollmentViewModel model)
         {
-            if (await _enrollmentRepository.EnrollmentExistsAsync(model.StudentId, model.SubjectId))
-            {
-                ModelState.AddModelError(nameof(model.SubjectId), "The selected student is already enrolled in this subject");
-            }
-            else
-            {
-                var availableSubjects = await _enrollmentRepository
-                    .GetAvailableSubjectsForStudentAsync(model.StudentId);
+            if (!await PopulateViewModelAsync(model))
+                return NotFound();
 
-                if (!availableSubjects.Any(s => s.SubjectId == model.SubjectId))
+            var selectedSubjectIds = (model.SelectedSubjectIds ?? new List<int>())
+                .Distinct()
+                .ToList();
+
+            if (!selectedSubjectIds.Any())
+            {
+                ModelState.AddModelError(nameof(model.SelectedSubjectIds), "Please select at least one subject");
+            }
+
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var availableSubjects = await _enrollmentRepository.GetAvailableSubjectsForStudentAsync(model.StudentId);
+
+            var availableSubjectIds = availableSubjects
+                .Select(s => s.SubjectId)
+                .ToHashSet();
+
+            foreach (var subjectId in selectedSubjectIds)
+            {
+                if (await _enrollmentRepository
+                    .EnrollmentExistsAsync(model.StudentId, subjectId))
                 {
-                    ModelState.AddModelError(nameof(model.SubjectId), "The selected subject is not available for this student");
+                    ModelState.AddModelError(
+                        nameof(model.SelectedSubjectIds),
+                        "The student is already enrolled in one or more selected subjects.");
+
+                    break;
+                }
+
+                if (!availableSubjectIds.Contains(subjectId))
+                {
+                    ModelState.AddModelError(
+                        nameof(model.SelectedSubjectIds),
+                        "One or more selected subjects are not available for this student.");
+
+                    break;
                 }
             }
 
             if (!ModelState.IsValid)
-            {
-                if (!await PopulateViewModelAsync(model))
-                    return NotFound();
-
                 return View(model);
+
+            foreach (var subjectId in selectedSubjectIds)
+            {
+                var enrollment = new Enrollment
+                {
+                    StudentId = model.StudentId,
+                    SubjectId = subjectId
+                };
+
+                await _enrollmentRepository.AddAsync(enrollment);
             }
 
-            var enrollment = new Enrollment
-            {
-                StudentId = model.StudentId,
-                SubjectId = model.SubjectId
-            };
-
-            await _enrollmentRepository.AddAsync(enrollment);
             await _enrollmentRepository.SaveChangesAsync();
 
-            return RedirectToAction("Details", "Student", new { id = model.StudentId });
+            return RedirectToAction(
+                "Details",
+                "Student",
+                new { id = model.StudentId });
         }
 
         [HttpGet]

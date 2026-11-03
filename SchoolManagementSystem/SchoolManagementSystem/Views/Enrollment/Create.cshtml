@@ -1,44 +1,90 @@
 ﻿@model SchoolManagementSystem.Models.EnrollmentViewModel
+@using Microsoft.AspNetCore.Mvc.Rendering
 
 @{
-    ViewData["Title"] = "Add Enrollment";
+    ViewData["Title"] = "Add Enrollments";
+
+    var subjects = (Model.SubjectsList ?? Enumerable.Empty<SelectListItem>())
+        .Select(s => new
+        {
+            Id = s.Value,
+            Name = s.Text
+        })
+        .ToList();
+
+    var selected = Model.SelectedSubjectIds
+        .Select(id => id.ToString())
+        .ToArray();
 }
 
-<h1>Add Enrollment</h1>
+<h1>Add Enrollments</h1>
 <hr />
 
-@if (Model.SubjectsList == null || !Model.SubjectsList.Any())
+@if (!subjects.Any())
 {
     <div class="alert alert-info">
-        <strong>@Model.StudentName</strong> is already enrolled in every subject of the course,
-        or the course has no subjects yet.
+        <strong>@Model.StudentName</strong> is already enrolled in every
+        subject of the course, or the course has no subjects yet.
     </div>
 
-    <a asp-controller="Student" asp-action="Details" asp-route-id="@Model.StudentId" class="btn btn-secondary">Back to Student</a>
+    <a asp-controller="Student"
+       asp-action="Details"
+       asp-route-id="@Model.StudentId"
+       class="btn btn-secondary">
+        Back to Student
+    </a>
 }
 else
 {
     <div class="row">
         <div class="col-md-6">
-            <form asp-action="Create">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger"></div>
+
                 <input type="hidden" asp-for="StudentId" />
 
                 <div class="form-group mb-3">
-                    <label asp-for="StudentName" class="control-label"></label>
-                    <input asp-for="StudentName" class="form-control" disabled />
+                    <label asp-for="StudentName"
+                           class="control-label"></label>
+
+                    <input asp-for="StudentName"
+                           class="form-control"
+                           disabled />
                 </div>
 
                 <div class="form-group mb-3">
-                    <label asp-for="SubjectId" class="control-label"></label>
-                    <select asp-for="SubjectId" asp-items="Model.SubjectsList" class="form-control">
-                        <option value="">-- Select a Subject --</option>
-                    </select>
-                    <span asp-validation-for="SubjectId" class="text-danger"></span>
+                    <label asp-for="SelectedSubjectIds"
+                           class="control-label"></label>
+
+                    <ejs-multiselect id="SelectedSubjectIds"
+                                     name="SelectedSubjectIds"
+                                     dataSource="subjects"
+                                     value="selected"
+                                     mode="Box"
+                                     allowFiltering="true"
+                                     filterType="Contains"
+                                     placeholder="Search and select subjects"
+                                     popupHeight="250px">
+                        <e-multiselect-fields value="Id"
+                                              text="Name">
+                        </e-multiselect-fields>
+                    </ejs-multiselect>
+
+                    <span asp-validation-for="SelectedSubjectIds"
+                          class="text-danger"></span>
                 </div>
 
-                <input type="submit" value="Add" class="btn btn-primary" />
-                <a asp-controller="Student" asp-action="Details" asp-route-id="@Model.StudentId" class="btn btn-secondary">Cancel</a>
+                <input type="submit"
+                       value="Save"
+                       class="btn btn-primary" />
+
+                <a asp-controller="Student"
+                   asp-action="Details"
+                   asp-route-id="@Model.StudentId"
+                   class="btn btn-secondary">
+                    Cancel
+                </a>
             </form>
         </div>
     </div>
