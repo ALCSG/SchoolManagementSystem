@@ -7,5 +7,6 @@ namespace SchoolManagementSystem.Data.Interface
         Task<IEnumerable<ClassGroup>> GetAllWithDetailsAsync();
         Task<ClassGroup?> GetByIdWithDetailsAsync(int id);
         Task<bool> DescriptionExistsInCourseAsync(string description, int courseId, int? excludeClassGroupId = null);
+        Task<ClassGroup?> GetByIdWithGradesAsync(int id);
     }
 }

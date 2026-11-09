@@ -14,7 +14,9 @@
         EditUrl = Url.Action("Edit", "ClassGroup",
             new { id = group.ClassGroupId }),
         DeleteUrl = Url.Action("Delete", "ClassGroup",
-            new { id = group.ClassGroupId })
+            new { id = group.ClassGroupId }),
+        GradesUrl = Url.Action("Grades", "ClassGroup",
+            new { id = group.ClassGroupId})
     }).ToList();
 }
 
@@ -35,6 +37,11 @@
         <a href="${DetailsUrl}"
            class="btn btn-sm btn-outline-secondary">
             Details
+        </a>
+
+        <a href="${GradesUrl}"
+            class="btn btn-sm btn-outline-success">
+            Grades & Absences
         </a>
 
         @if (User.IsInRole("Admin"))

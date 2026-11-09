@@ -1,0 +1,213 @@
+﻿@using SchoolManagementSystem.Data.Entities
+@model SchoolManagementSystem.Data.Entities.ClassGroup
+
+@{
+    ViewData["Title"] = "Grades & Absences";
+
+    var students = Model.Students?
+        .Where(s => !s.IsArchived)
+        .OrderBy(s => s.FirstName)
+        .ThenBy(s => s.LastName)
+        .ToList() ?? new List<Student>();
+
+    var courseSubjects = Model.Course?.Subjects?.ToList()
+        ?? new List<Subject>();
+
+    var subjects = courseSubjects
+        .Concat(students
+            .SelectMany(s => s.Enrollments)
+            .Select(e => e.Subject)
+            .Where(s => s != null))
+        .DistinctBy(s => s.SubjectId)
+        .OrderBy(s => s.Name)
+        .ToList();
+
+    var gridData = new List<Dictionary<string, object>>();
+
+    foreach (var student in students)
+    {
+        var row = new Dictionary<string, object>
+        {
+            ["StudentId"] = student.StudentId,
+            ["StudentName"] = $"{student.FirstName} {student.LastName}",
+            ["DetailsUrl"] = Url.Action(
+                "Details",
+                "Student",
+                new { id = student.StudentId }) ?? ""
+        };
+
+        var enrollmentsBySubject = student.Enrollments
+            .ToDictionary(e => e.SubjectId);
+
+        foreach (var subject in subjects)
+        {
+            var key = subject.SubjectId.ToString();
+
+            var isEnrolled = enrollmentsBySubject.TryGetValue(
+                subject.SubjectId,
+                out var enrollment);
+
+            row[$"Grade_{key}"] =
+                enrollment?.FinalGrade is { } grade
+                    ? (object)grade
+                    : null!;
+
+            row[$"Absences_{key}"] =
+                enrollment?.AbsenceCount ?? 0;
+
+            row[$"Approved_{key}"] =
+                enrollment?.IsApproved ?? false;
+
+            row[$"Enrolled_{key}"] = isEnrolled;
+        }
+
+        gridData.Add(row);
+    }
+}
+
+<div class="d-flex flex-wrap justify-content-between
+    align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Grades & Absences</h1>
+
+        <p class="text-muted mb-0">
+            @(Model.Course?.Name ?? "Course not available")
+            · @Model.Description
+        </p>
+    </div>
+
+    <a asp-action="Index"
+       class="btn btn-outline-secondary">
+        Back to class groups
+    </a>
+</div>
+
+@if (!students.Any())
+{
+    <div class="alert alert-info">
+        This class group has no active students yet.
+    </div>
+}
+else if (!subjects.Any())
+{
+    <div class="alert alert-info">
+        There are no subjects available for this class group yet.
+    </div>
+}
+else
+{
+    <script id="gradeStudentTemplate" type="text/x-template">
+        <a href="${DetailsUrl}">
+            ${StudentName}
+        </a>
+    </script>
+
+    <script>
+        function gradesQueryCellInfo(args) {
+            const field = args.column.field;
+
+            if (!field || !field.startsWith("Grade_")) {
+                return;
+            }
+
+            const subjectKey = field.substring("Grade_".length);
+            const data = args.data;
+
+            args.cell.replaceChildren();
+
+            // No enrollment for this subject.
+            if (!data["Enrolled_" + subjectKey]) {
+                const dash = document.createElement("span");
+                dash.className = "text-muted";
+                dash.textContent = "—";
+
+                args.cell.appendChild(dash);
+                return;
+            }
+
+            const grade = data[field];
+            const absences = data["Absences_" + subjectKey];
+            const approved = data["Approved_" + subjectKey];
+
+            const container = document.createElement("div");
+            container.className =
+                "d-flex flex-column align-items-center gap-1 py-1";
+
+            const gradeElement = document.createElement("span");
+
+            if (grade === null || grade === undefined) {
+                gradeElement.className = "small text-muted";
+                gradeElement.textContent = "No grade";
+            } else {
+                gradeElement.className =
+                    "badge " + (approved ? "bg-success" : "bg-danger");
+
+                gradeElement.textContent = Number(grade).toFixed(1);
+            }
+
+            const absencesElement = document.createElement("small");
+            absencesElement.className = "text-muted";
+            absencesElement.textContent =
+                absences + (absences === 1 ? " absence" : " absences");
+
+            container.appendChild(gradeElement);
+            container.appendChild(absencesElement);
+
+            args.cell.appendChild(container);
+        }
+    </script>
+
+    <ejs-grid id="ClassGroupGradesGrid"
+              dataSource="@gridData"
+              allowPaging="true"
+              allowSorting="true"
+              allowFiltering="true"
+              toolbar="@(new List<string> { "Search" })"
+              queryCellInfo="gradesQueryCellInfo"
+              width="100%">
+
+        <e-grid-pagesettings pageSize="10"
+                             pageCount="5">
+        </e-grid-pagesettings>
+
+        <e-grid-filtersettings type="Menu">
+        </e-grid-filtersettings>
+
+        <e-grid-searchsettings fields="@(new string[] { "StudentName" })"
+                               operator="contains"
+                               ignoreCase="true">
+        </e-grid-searchsettings>
+
+        <e-grid-columns>
+            <e-grid-column field="StudentId"
+                           isPrimaryKey="true"
+                           visible="false">
+            </e-grid-column>
+
+            <e-grid-column field="StudentName"
+                           headerText="Student"
+                           template="#gradeStudentTemplate"
+                           width="240"
+                           minWidth="200">
+            </e-grid-column>
+
+            @foreach (var subject in subjects)
+            {
+                <e-grid-column field="@($"Grade_{subject.SubjectId}")"
+                               headerText="@subject.Name"
+                               type="number"
+                               format="N1"
+                               textAlign="Center"
+                               width="170"
+                               minWidth="150">
+                </e-grid-column>
+            }
+        </e-grid-columns>
+    </ejs-grid>
+
+    <p class="small text-muted mt-2">
+        Each subject shows the final grade and absence count.
+        A dash means the student is not enrolled.
+        Subject sorting and filtering use the final grade.
+    </p>
+}

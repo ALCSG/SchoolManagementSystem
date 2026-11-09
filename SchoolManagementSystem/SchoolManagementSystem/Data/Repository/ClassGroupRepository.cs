@@ -26,5 +26,17 @@ namespace SchoolManagementSystem.Data.Repository
         public async Task<bool> DescriptionExistsInCourseAsync(string description, int courseId, int? excludeClassGroupId = null)
             => await _context.ClassGroups
                 .AnyAsync(g => g.Description == description && g.CourseId == courseId && (excludeClassGroupId == null || g.ClassGroupId != excludeClassGroupId));
+
+        public async Task<ClassGroup?> GetByIdWithGradesAsync(int id)
+            => await _context.ClassGroups
+                .Include(g => g.Course)
+                    .ThenInclude(c => c.Subjects)
+                .Include(g => g.Students)
+                    .ThenInclude(s => s.AppUser)
+                .Include(g => g.Students)
+                    .ThenInclude(s => s.Enrollments)
+                        .ThenInclude(e => e.Subject)
+                .AsSplitQuery()
+            .FirstOrDefaultAsync(g => g.ClassGroupId == id);
     }
 }

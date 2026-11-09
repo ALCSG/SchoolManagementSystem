@@ -201,5 +201,15 @@ namespace SchoolManagementSystem.Controllers
                 return View("Delete", classGroup);
             }
         }
+
+        public async Task<IActionResult> Grades(int id)
+        {
+            var classGroup = await _classGroupRepository.GetByIdWithGradesAsync(id);
+
+            if (classGroup == null)
+                return NotFound();
+
+            return View(classGroup);
+        }
     }
 }
