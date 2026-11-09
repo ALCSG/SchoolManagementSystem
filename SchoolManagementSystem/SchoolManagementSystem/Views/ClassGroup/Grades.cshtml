@@ -10,6 +10,16 @@
         .ThenBy(s => s.LastName)
         .ToList() ?? new List<Student>();
 
+    var finalGrades = students
+        .SelectMany(s => s.Enrollments)
+        .Select(e => e.FinalGrade)
+        .ToList();
+
+    var classAverage = finalGrades.Average();
+
+    var gradedEnrollmentCount = finalGrades
+        .Count(grade => grade.HasValue);
+
     var courseSubjects = Model.Course?.Subjects?.ToList()
         ?? new List<Subject>();
 
@@ -80,6 +90,40 @@
        class="btn btn-outline-secondary">
         Back to class groups
     </a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="small text-muted mb-2">
+                    Class average
+                </h2>
+
+                <div class="fs-2 fw-semibold mb-1">
+                    @(classAverage.HasValue
+                        ? classAverage.Value.ToString("0.0")
+                        : "—")
+                </div>
+
+                <p class="small text-muted mb-0">
+                    @if (gradedEnrollmentCount > 0)
+                    {
+                        <span>
+                            Based on @gradedEnrollmentCount
+                            final @(gradedEnrollmentCount == 1
+                                ? "grade"
+                                : "grades")
+                        </span>
+                    }
+                    else
+                    {
+                        <span>No final grades available yet.</span>
+                    }
+                </p>
+            </div>
+        </div>
+    </div>
 </div>
 
 @if (!students.Any())
