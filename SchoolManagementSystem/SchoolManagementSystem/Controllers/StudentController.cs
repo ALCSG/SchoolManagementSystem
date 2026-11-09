@@ -34,12 +34,16 @@ namespace SchoolManagementSystem.Controllers
             _alertRepository = alertRepository;
         }
 
+        [HttpGet]
+        [Authorize(Roles = "Employee")]
         public async Task<IActionResult> Index()
         {
             var students = await _studentRepository.GetAllWithDetailsAsync();
             return View(students);
         }
 
+        [HttpGet]
+        [Authorize(Roles = "Employee")]
         public async Task<IActionResult> Create()
         {
             var model = new StudentViewModel
@@ -107,32 +111,8 @@ namespace SchoolManagementSystem.Controllers
             }
         }
 
-        private async Task<string> SavePhotoAsync(IFormFile file)
-        {
-            var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads", "students");
-            Directory.CreateDirectory(uploadsFolder);
-
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-            var filePath = Path.Combine(uploadsFolder, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            return $"/uploads/students/{fileName}";
-        }
-
-        private async Task<IEnumerable<SelectListItem>> GetClassGroupsSelectListAsync()
-        {
-            var groups = await _classGroupRepository.GetAllAsync();
-            return groups.Select(g => new SelectListItem
-            {
-                Value = g.ClassGroupId.ToString(),
-                Text = g.Description
-            });
-        }
-
+        [HttpGet]
+        [Authorize(Roles = "Employee")]
         public async Task<IActionResult> Edit(int id)
         {
             var student = await _studentRepository.GetByIdWithDetailsAsync(id);
@@ -185,6 +165,8 @@ namespace SchoolManagementSystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
+        [Authorize(Roles = "Employee,Admin,Student")]
         public async Task<IActionResult> Details(int id)
         {
             var student = await _studentRepository.GetByIdWithDetailsAsync(id);
@@ -192,9 +174,25 @@ namespace SchoolManagementSystem.Controllers
             if (student == null)
                 return NotFound();
 
+            var isStaff = User.IsInRole("Admin") ||
+                          User.IsInRole("Employee");
+
+            if (!isStaff)
+            {
+                var appUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (string.IsNullOrWhiteSpace(appUserId) ||
+                    student.AppUserId != appUserId)
+                {
+                    return Forbid();
+                }
+            }
+
             return View(student);
         }
 
+        [HttpGet]
+        [Authorize(Roles = "Employee")]
         public async Task<IActionResult> Delete(int id)
         {
             var student = await _studentRepository.GetByIdWithDetailsAsync(id);
@@ -255,6 +253,32 @@ namespace SchoolManagementSystem.Controllers
                 return NotFound();
 
             return View(student);
+        }
+
+        private async Task<string> SavePhotoAsync(IFormFile file)
+        {
+            var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads", "students");
+            Directory.CreateDirectory(uploadsFolder);
+
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return $"/uploads/students/{fileName}";
+        }
+
+        private async Task<IEnumerable<SelectListItem>> GetClassGroupsSelectListAsync()
+        {
+            var groups = await _classGroupRepository.GetAllAsync();
+            return groups.Select(g => new SelectListItem
+            {
+                Value = g.ClassGroupId.ToString(),
+                Text = g.Description
+            });
         }
     }
 
