@@ -1,50 +1,93 @@
-﻿@if (User.Identity?.IsAuthenticated == true)
+﻿@using Microsoft.AspNetCore.Identity
+@using SchoolManagementSystem.Data.Entities
+@inject UserManager<AppUser> UserManager
+
+@if (User.Identity?.IsAuthenticated == true)
 {
-    <div class="dropdown">
-        <button class="btn account-button dropdown-toggle"
-                type="button"
-                id="accountDropdown"
-                data-bs-toggle="dropdown"
-                aria-expanded="false">
-            @User.Identity?.Name
-        </button>
+    var currentUser = await UserManager.GetUserAsync(User);
 
-        <ul class="dropdown-menu dropdown-menu-end account-menu"
-            aria-labelledby="accountDropdown">
-            <li>
-                <a class="dropdown-item"
-                   asp-controller="Account"
-                   asp-action="ChangePassword">
-                    Change Password
-                </a>
-            </li>
+    var profilePicturePath = currentUser?.ProfilePicturePath;
 
-            <li>
-                <hr class="dropdown-divider" />
-            </li>
+    var initials = string.Concat(
+        currentUser?.FirstName?.Trim().FirstOrDefault() ?? ' ',
+        currentUser?.LastName?.Trim().FirstOrDefault() ?? ' '
+    ).Trim().ToUpperInvariant();
 
-            <li>
-                <a class="dropdown-item"
-                   asp-controller="Account"
-                   asp-action="Profile">
-                    Profile
-                </a>
-            </li>
+    if (string.IsNullOrWhiteSpace(initials))
+    {
+        initials = "?";
+    }
 
-            <li>
-                <hr class="dropdown-divider" />
-            </li>
+    <div class="d-flex align-items-center gap-2">
+        <a asp-controller="Account"
+           asp-action="Profile"
+           class="account-avatar-link"
+           aria-label="View profile">
 
-            <li>
-                <form asp-controller="Account"
-                      asp-action="Logout"
-                      method="post">
-                    <button type="submit" class="dropdown-item">
-                        Logout
-                    </button>
-                </form>
-            </li>
-        </ul>
+            @if (!string.IsNullOrWhiteSpace(profilePicturePath))
+            {
+                <img src="@Url.Content(profilePicturePath)"
+                     class="account-avatar"
+                     width="36"
+                     height="36"
+                     alt="" />
+            }
+            else
+            {
+                <span class="account-avatar account-avatar-placeholder"
+                      aria-hidden="true">
+                    @initials
+                </span>
+            }
+        </a>
+
+        <div class="dropdown">
+            <button class="btn account-button dropdown-toggle"
+                    type="button"
+                    id="accountDropdown"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                @User.Identity?.Name
+            </button>
+
+            <ul class="dropdown-menu dropdown-menu-end account-menu"
+                aria-labelledby="accountDropdown">
+                <li>
+                    <a class="dropdown-item"
+                       asp-controller="Account"
+                       asp-action="ChangePassword">
+                        Change Password
+                    </a>
+                </li>
+
+                <li>
+                    <hr class="dropdown-divider" />
+                </li>
+
+                <li>
+                    <a class="dropdown-item"
+                       asp-controller="Account"
+                       asp-action="Profile">
+                        Profile
+                    </a>
+                </li>
+
+                <li>
+                    <hr class="dropdown-divider" />
+                </li>
+
+                <li>
+                    <form asp-controller="Account"
+                          asp-action="Logout"
+                          method="post">
+                        <button type="submit"
+                                class="dropdown-item">
+                            Logout
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
     </div>
 }
 else
