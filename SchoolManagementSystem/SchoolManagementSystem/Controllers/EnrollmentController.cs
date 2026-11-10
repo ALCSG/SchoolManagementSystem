@@ -190,7 +190,7 @@ namespace SchoolManagementSystem.Controllers
             if (student == null)
                 return false;
 
-            model.StudentName = $"{student.AppUser.FirstName} {student.AppUser.LastName}";
+            model.StudentName = $"{student.FirstName} {student.LastName}";
             model.SubjectsList = await GetAvailableSubjectsSelectListAsync(model.StudentId);
 
             return true;
