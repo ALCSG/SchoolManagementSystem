@@ -17,7 +17,7 @@ namespace SchoolManagementSystem.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.12")
+                .HasAnnotation("ProductVersion", "10.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -362,6 +362,22 @@ namespace SchoolManagementSystem.Migrations
                     b.ToTable("Enrollments");
                 });
 
+            modelBuilder.Entity("SchoolManagementSystem.Data.Entities.SchoolSettings", b =>
+                {
+                    b.Property<int>("SchoolSettingsId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SchoolSettingsId"));
+
+                    b.Property<int>("MaxAbsencePercentage")
+                        .HasColumnType("int");
+
+                    b.HasKey("SchoolSettingsId");
+
+                    b.ToTable("Settings");
+                });
+
             modelBuilder.Entity("SchoolManagementSystem.Data.Entities.Student", b =>
                 {
                     b.Property<int>("StudentId")
@@ -421,6 +437,9 @@ namespace SchoolManagementSystem.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("TotalHours")
+                        .HasColumnType("int");
 
                     b.HasKey("SubjectId");
 

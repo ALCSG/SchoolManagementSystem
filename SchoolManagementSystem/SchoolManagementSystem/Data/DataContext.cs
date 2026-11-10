@@ -14,6 +14,7 @@ namespace SchoolManagementSystem.Data
         public DbSet<Student> Students { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
         public DbSet<Alert> Alerts { get; set; }
+        public DbSet<SchoolSettings> Settings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
