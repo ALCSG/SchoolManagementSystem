@@ -10,6 +10,7 @@ namespace SchoolManagementSystem.Data.Entities
         public string Name { get; set; }
 
         [Required]
+        [Display(Name = "Total hours")]
         public int TotalHours { get; set; }
 
         public ICollection<Course> Courses { get; set; } = new List<Course>();

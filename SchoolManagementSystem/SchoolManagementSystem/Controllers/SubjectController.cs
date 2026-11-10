@@ -37,10 +37,13 @@ namespace SchoolManagementSystem.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name")] Subject subject)
+        public async Task<IActionResult> Create([Bind("Name,TotalHours")] Subject subject)
         {
             if (await _subjectRepository.NameExistsAsync(subject.Name))
                 ModelState.AddModelError(nameof(subject.Name), "A subject with this name already exists");
+
+            if (subject.TotalHours != 25 && subject.TotalHours != 50)
+                ModelState.AddModelError(nameof(subject.TotalHours), "Total hours for the subject must be either 25 or 50.");
 
             if (!ModelState.IsValid)
                 return View(subject);
@@ -63,19 +66,24 @@ namespace SchoolManagementSystem.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit([Bind("SubjectId,Name")] Subject model)
+        public async Task<IActionResult> Edit([Bind("SubjectId,Name,TotalHours")] Subject model)
         {
             if (await _subjectRepository.NameExistsAsync(model.Name, model.SubjectId))
-                ModelState.AddModelError(nameof(model.Name), "A subject with this name already exists");
+                ModelState.AddModelError(nameof(model.Name),"A subject with this name already exists.");
+
+            if (model.TotalHours != 25 && model.TotalHours != 50)
+                ModelState.AddModelError(nameof(model.TotalHours),"Total hours for the subject must be either 25 or 50.");
 
             if (!ModelState.IsValid)
                 return View(model);
 
             var subject = await _subjectRepository.GetByIdAsync(model.SubjectId);
+
             if (subject == null)
                 return NotFound();
 
             subject.Name = model.Name;
+            subject.TotalHours = model.TotalHours;
 
             _subjectRepository.Update(subject);
             await _subjectRepository.SaveChangesAsync();
@@ -104,7 +112,7 @@ namespace SchoolManagementSystem.Controllers
 
             if (subject.Courses.Any() || subject.Enrollments.Any())
             {
-                ModelState.AddModelError(string.Empty,"This subject cannot be deleted because it is used by courses or has enrollments. Remove those links first.");
+                ModelState.AddModelError(string.Empty, "This subject cannot be deleted because it is used by courses or has enrollments. Remove those links first.");
                 return View("Delete", subject);
             }
 

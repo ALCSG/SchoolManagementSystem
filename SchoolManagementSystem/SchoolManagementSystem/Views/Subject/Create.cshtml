@@ -18,6 +18,12 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
+            <div class="form-group mb-3">
+                <label asp-for="TotalHours" class="control-label"></label>
+                <input asp-for="TotalHours" class="form-control" />
+                <span asp-validation-for="TotalHours" class="text-danger"></span>
+            </div>
+
             <input type="submit" value="Create" class="btn btn-primary" />
             <a asp-action="Index" class="btn btn-secondary">Back to List</a>
         </form>
