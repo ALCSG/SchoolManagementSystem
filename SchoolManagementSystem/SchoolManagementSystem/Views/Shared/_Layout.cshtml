@@ -87,6 +87,15 @@
                                             Dashboard
                                         </a>
                                     </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link"
+                                           asp-area=""
+                                           asp-controller="SchoolSettings"
+                                           asp-action="Index">
+                                            Settings
+                                        </a>
+                                    </li>
                                 }
 
                                 @if (User.IsInRole(AppRoles.Employee))

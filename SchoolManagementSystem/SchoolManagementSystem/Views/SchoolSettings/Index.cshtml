@@ -1,0 +1,78 @@
+﻿@model SchoolManagementSystem.Data.Entities.SchoolSettings
+
+@{
+    ViewData["Title"] = "School Settings";
+}
+
+<div class="d-flex flex-wrap justify-content-between
+            align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">School Settings</h1>
+
+        <p class="text-muted mb-0">
+            Manage the attendance settings applied to all subjects.
+        </p>
+    </div>
+
+    <a asp-controller="Dashboard"
+       asp-action="Index"
+       class="btn btn-outline-secondary">
+        Back to dashboard
+    </a>
+</div>
+
+@if (Model == null)
+{
+    <div class="alert alert-warning" role="alert">
+        School settings have not been configured yet.
+        The initial configuration must be created before it can be edited.
+    </div>
+}
+else
+{
+    <div class="row g-3">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <h2 class="h5 mb-3">Attendance settings</h2>
+
+                    <p class="small text-muted mb-1">
+                        Maximum absence percentage
+                    </p>
+
+                    <div class="fs-2 fw-semibold mb-3">
+                        @(Model.MaxAbsencePercentage)%
+                    </div>
+
+                    <p class="text-muted mb-3">
+                        Students whose absence percentage exceeds this
+                        limit are considered excluded from the
+                        corresponding subject.
+                    </p>
+
+                    @if (Model.MaxAbsencePercentage == 0)
+                    {
+                        <div class="alert alert-warning small">
+                            The limit is currently 0%.
+                            Any absence exceeds this limit.
+                        </div>
+                    }
+
+                    <div class="border-top pt-3">
+                        <p class="small text-muted mb-3">
+                            This setting applies globally to all subjects.
+                            Absence percentages are calculated using
+                            each subject's total hours.
+                        </p>
+
+                        <a asp-controller="SchoolSettings"
+                           asp-action="Edit"
+                           class="btn btn-primary">
+                            Edit settings
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

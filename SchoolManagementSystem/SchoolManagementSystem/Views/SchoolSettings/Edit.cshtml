@@ -1,0 +1,84 @@
+﻿@model SchoolManagementSystem.Models.SchoolSettingsViewModel
+
+@{
+    ViewData["Title"] = "School Settings";
+}
+
+<div class="mb-4">
+    <h1 class="h3 mb-1">School Settings</h1>
+
+    <p class="text-muted mb-0">
+        Configure the attendance limit applied to all subjects.
+    </p>
+</div>
+
+<div class="row">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <h2 class="h5 mb-3">Attendance settings</h2>
+
+                <form asp-controller="SchoolSettings"
+                      asp-action="Edit"
+                      method="post">
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="text-danger"
+                         role="alert">
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="MaxAbsencePercentage"
+                               class="form-label">
+                        </label>
+
+                        <div class="input-group">
+                            <input asp-for="MaxAbsencePercentage"
+                                   class="form-control"
+                                   type="number"
+                                   min="0"
+                                   max="25"
+                                   step="1"
+                                   aria-describedby="absencePercentageHelp" />
+
+                            <span class="input-group-text">%</span>
+                        </div>
+
+                        <span asp-validation-for="MaxAbsencePercentage"
+                              class="text-danger">
+                        </span>
+
+                        <div id="absencePercentageHelp"
+                             class="form-text">
+                            Enter a whole number between 0 and 25.
+                            This limit applies to all subjects.
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info small mb-4">
+                        Students whose absence percentage exceeds this
+                        limit will be excluded from the corresponding subject.
+                        A limit of 0% means that any absence exceeds the limit.
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="submit"
+                                class="btn btn-primary">
+                            Save settings
+                        </button>
+
+                        <a asp-controller="Dashboard"
+                           asp-action="Index"
+                           class="btn btn-outline-secondary">
+                            Back to dashboard
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

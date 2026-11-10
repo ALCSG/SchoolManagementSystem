@@ -40,6 +40,7 @@ namespace SchoolManagementSystem
             builder.Services.AddScoped<IAlertRepository, AlertRepository>();
             builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("Mail"));
             builder.Services.AddScoped<IMailHelper, MailHelper>();
+            builder.Services.AddScoped<ISchoolSettingsRepository,SchoolSettingsRepository>();
 
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(builder.Configuration["Syncfusion:LicenseKey"]);
 
@@ -48,6 +49,18 @@ namespace SchoolManagementSystem
 
             using (var scope = app.Services.CreateScope())
             {
+                var context = scope.ServiceProvider.GetRequiredService<DataContext>();
+
+                if (!await context.Set<SchoolSettings>().AnyAsync())
+                {
+                    context.Set<SchoolSettings>().Add(new SchoolSettings
+                    {
+                        MaxAbsencePercentage = 10
+                    });
+
+                    await context.SaveChangesAsync();
+                }
+
                 var roleHelper = scope.ServiceProvider.GetRequiredService<IRoleHelper>();
 
                 await roleHelper.SeedRolesAsync(AppRoles.All);
