@@ -100,30 +100,28 @@ namespace SchoolManagementSystem.Controllers
         {
             await LoadCreateOptionsAsync(model);
 
+            AppUser appUser;
+
             try
             {
-                await using var transaction =
-                    await _context.Database.BeginTransactionAsync();
+                await using var transaction = await _context.Database.BeginTransactionAsync();
 
                 Student? student = null;
 
                 if (model.StudentId.HasValue)
                 {
-                    student = await _studentRepository
-                        .GetByIdWithDetailsAsync(model.StudentId.Value);
+                    student = await _studentRepository.GetByIdWithDetailsAsync(model.StudentId.Value);
 
                     if (student == null)
                     {
-                        ModelState.AddModelError(string.Empty,
-                            "The selected student was not found.");
+                        ModelState.AddModelError(string.Empty,"The selected student was not found.");
 
                         return View(model);
                     }
 
                     if (student.AppUserId != null)
                     {
-                        ModelState.AddModelError(string.Empty,
-                            "This student already has a user account.");
+                        ModelState.AddModelError(string.Empty,"This student already has a user account.");
 
                         return View(model);
                     }
@@ -142,23 +140,20 @@ namespace SchoolManagementSystem.Controllers
                 }
                 else
                 {
-                    if (string.IsNullOrWhiteSpace(model.Role) ||
-                        !AppRoles.All.Contains(model.Role))
+                    if (string.IsNullOrWhiteSpace(model.Role) || !AppRoles.All.Contains(model.Role))
                     {
-                        ModelState.AddModelError(nameof(model.Role),
-                            "Please select a valid role.");
+                        ModelState.AddModelError(nameof(model.Role),"Please select a valid role.");
                     }
                     else if (model.Role == AppRoles.Student)
                     {
-                        ModelState.AddModelError(nameof(model.Role),
-                            "Please select a student from the pending students panel.");
+                        ModelState.AddModelError(nameof(model.Role),"Please select a student from the pending students panel.");
                     }
                 }
 
                 if (!ModelState.IsValid)
                     return View(model);
 
-                var appUser = new AppUser
+                appUser = new AppUser
                 {
                     UserName = model.Email,
                     Email = model.Email,
@@ -172,20 +167,19 @@ namespace SchoolManagementSystem.Controllers
                 {
                     foreach (var error in createResult.Errors)
                     {
-                        ModelState.AddModelError(string.Empty, error.Description);
+                        ModelState.AddModelError(string.Empty,error.Description);
                     }
 
                     return View(model);
                 }
 
-                var roleResult = await _roleHelper
-                    .AddUserToRoleAsync(appUser, model.Role);
+                var roleResult = await _roleHelper.AddUserToRoleAsync(appUser, model.Role);
 
                 if (!roleResult.Succeeded)
                 {
                     foreach (var error in roleResult.Errors)
                     {
-                        ModelState.AddModelError(string.Empty, error.Description);
+                        ModelState.AddModelError(string.Empty,error.Description);
                     }
 
                     return View(model);
@@ -200,35 +194,54 @@ namespace SchoolManagementSystem.Controllers
                 }
 
                 await transaction.CommitAsync();
-
-                var token = await _userManager.GeneratePasswordResetTokenAsync(appUser);
-                var link = Url.Action("ResetPassword", "Account", new { userId = appUser.Id, token }, protocol: Request.Scheme);
-
-                if (link != null)
-                {
-                    var body = $@"
-                            <p>Hello {System.Net.WebUtility.HtmlEncode(appUser.FirstName)},</p>
-                            <p>Click the link below to define your password:</p>
-                            <p><a href=""{link}"">Define my password</a></p>";
-
-                    await _mailHelper.SendEmailAsync(appUser.Email!, $"{appUser.FirstName} {appUser.LastName}", "Password definition", body);
-                }
-
-                TempData["Message"] = "User account created successfully.";
-
-                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,
-                    "Failed to create a user account for student {StudentId}.",
-                    model.StudentId);
+                _logger.LogError(ex,"Failed to create a user account for student {StudentId}.",model.StudentId);
 
-                ModelState.AddModelError(string.Empty,
-                    "The user account could not be created. Please try again.");
+                ModelState.AddModelError(string.Empty,"The user account could not be created. Please try again.");
 
                 return View(model);
             }
+
+            try
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(appUser);
+
+                var link = Url.Action("ResetPassword","Account",
+                    new
+                    {
+                        userId = appUser.Id,
+                        token
+                    },
+                    protocol: Request.Scheme);
+
+                if (string.IsNullOrWhiteSpace(link))
+                {
+                    throw new InvalidOperationException("Could not generate the password definition link.");
+                }
+
+                var firstName = System.Net.WebUtility.HtmlEncode(appUser.FirstName);
+
+                var encodedLink = System.Net.WebUtility.HtmlEncode(link);
+
+                var body = $@"
+                              <p>Hello {firstName},</p>
+                              <p>Click the link below to define your password:</p>
+                              <p><a href=""{encodedLink}"">Define my password</a></p>";
+
+                await _mailHelper.SendEmailAsync(appUser.Email!,$"{appUser.FirstName} {appUser.LastName}","Password definition",body);
+
+                TempData["Message"] = "User account created successfully. " + "A password definition email was sent.";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,"User account {UserId} was created, but the password definition email could not be sent.",appUser.Id);
+
+                TempData["Message"] ="User account created successfully, but the password definition email could not be sent. " + "The user can request a new link through Forgot password.";
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         private IEnumerable<SelectListItem> GetRolesSelectList()
