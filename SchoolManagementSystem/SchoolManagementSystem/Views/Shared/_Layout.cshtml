@@ -59,7 +59,8 @@
                                     </a>
                                 </li>
 
-                                @if (User.IsInRole(AppRoles.Admin))
+                                @if (User.IsInRole(AppRoles.Admin) ||
+                                     User.IsInRole(AppRoles.Employee))
                                 {
                                     <li class="nav-item">
                                         <a class="nav-link"
@@ -78,7 +79,10 @@
                                             Subjects
                                         </a>
                                     </li>
+                                }
 
+                                @if (User.IsInRole(AppRoles.Admin))
+                                {
                                     <li class="nav-item">
                                         <a class="nav-link"
                                            asp-area=""
@@ -112,15 +116,6 @@
                                     <li class="nav-item">
                                         <a class="nav-link"
                                            asp-area=""
-                                           asp-controller="Subject"
-                                           asp-action="Index">
-                                            Subjects
-                                        </a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a class="nav-link"
-                                           asp-area=""
                                            asp-controller="Student"
                                            asp-action="Index">
                                             Students
@@ -137,15 +132,41 @@
                                     </li>
                                 }
 
-                                @if (User.IsInRole("Student"))
+                                @if (User.IsInRole(AppRoles.Student))
                                 {
                                     <li class="nav-item">
                                         <a class="nav-link"
+                                           asp-area=""
                                            asp-controller="Student"
                                            asp-action="MyLearning">
                                             My Learning
                                         </a>
                                     </li>
+
+                                    @if (!User.IsInRole(AppRoles.Admin) &&
+                                         !User.IsInRole(AppRoles.Employee))
+                                    {
+                                        <li class="nav-item">
+                                            <a class="nav-link"
+                                               asp-area=""
+                                               asp-controller="Course"
+                                               asp-action="Catalog">
+                                                Courses
+                                            </a>
+                                        </li>
+                                    }
+
+                                    @if (!User.IsInRole(AppRoles.Employee))
+                                    {
+                                        <li class="nav-item">
+                                            <a class="nav-link"
+                                               asp-area=""
+                                               asp-controller="ClassGroup"
+                                               asp-action="Catalog">
+                                                Class Groups
+                                            </a>
+                                        </li>
+                                    }
                                 }
                             </ul>
 
