@@ -14,8 +14,15 @@
             <div class="card h-100 text-center">
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">Students</h5>
-                    <p class="card-text text-muted">Create, edit and consult student records.</p>
-                    <a asp-controller="Student" asp-action="Index" class="btn btn-primary mt-auto">Open</a>
+                    <p class="card-text text-muted">
+                        Manage student records, subject enrollments,
+                        grades and absences.
+                    </p>
+                    <a asp-controller="Student"
+                       asp-action="Index"
+                       class="btn btn-primary mt-auto">
+                        Open
+                    </a>
                 </div>
             </div>
         </div>
@@ -24,8 +31,73 @@
             <div class="card h-100 text-center">
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">Class Groups</h5>
-                    <p class="card-text text-muted">Organize students into class groups per course.</p>
-                    <a asp-controller="ClassGroup" asp-action="Index" class="btn btn-primary mt-auto">Open</a>
+                    <p class="card-text text-muted">
+                        Consult class groups, their students
+                        and grades.
+                    </p>
+                    <a asp-controller="ClassGroup"
+                       asp-action="Index"
+                       class="btn btn-primary mt-auto">
+                        Open
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (User.IsInRole(AppRoles.Admin) ||
+         User.IsInRole(AppRoles.Employee))
+    {
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 text-center">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Courses</h5>
+                    <p class="card-text text-muted">
+                        @(User.IsInRole(AppRoles.Admin)
+                            ? "Manage courses and their subjects."
+                            : "Consult courses and create new courses using available subjects.")
+                    </p>
+                    <a asp-controller="Course"
+                       asp-action="Index"
+                       class="btn btn-primary mt-auto">
+                        Open
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 text-center">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Subjects</h5>
+                    <p class="card-text text-muted">
+                        Create, edit and manage the catalog of subjects.
+                    </p>
+                    <a asp-controller="Subject"
+                       asp-action="Index"
+                       class="btn btn-primary mt-auto">
+                        Open
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (User.IsInRole(AppRoles.Employee))
+    {
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 text-center">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Report a Problem</h5>
+                    <p class="card-text text-muted">
+                        Notify the administrator about missing courses,
+                        subjects or other platform issues.
+                    </p>
+                    <a asp-controller="Alert"
+                       asp-action="Create"
+                       class="btn btn-primary mt-auto">
+                        Open
+                    </a>
                 </div>
             </div>
         </div>
@@ -36,29 +108,88 @@
         <div class="col-md-6 col-lg-3">
             <div class="card h-100 text-center">
                 <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">Courses</h5>
-                    <p class="card-text text-muted">Manage courses and their subjects.</p>
-                    <a asp-controller="Course" asp-action="Index" class="btn btn-primary mt-auto">Open</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-3">
-            <div class="card h-100 text-center">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">Subjects</h5>
-                    <p class="card-text text-muted">Manage the catalog of subjects.</p>
-                    <a asp-controller="Subject" asp-action="Index" class="btn btn-primary mt-auto">Open</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-3">
-            <div class="card h-100 text-center">
-                <div class="card-body d-flex flex-column">
                     <h5 class="card-title">Dashboard</h5>
-                    <p class="card-text text-muted">Review and manage problems reported by the staff.</p>
-                    <a asp-controller="Dashboard" asp-action="Index" class="btn btn-primary mt-auto">Open</a>
+                    <p class="card-text text-muted">
+                        Review and manage problems reported by the staff.
+                    </p>
+                    <a asp-controller="Dashboard"
+                       asp-action="Index"
+                       class="btn btn-primary mt-auto">
+                        Open
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (User.IsInRole(AppRoles.Student))
+    {
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 text-center">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">My Learning</h5>
+                    <p class="card-text text-muted">
+                        View your subjects, grades, absences
+                        and academic status.
+                    </p>
+                    <a asp-controller="Student"
+                       asp-action="MyLearning"
+                       class="btn btn-primary mt-auto">
+                        Open
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 text-center">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Courses</h5>
+                    <p class="card-text text-muted">
+                        Explore the available courses
+                        and their subjects.
+                    </p>
+                    <a asp-controller="Course"
+                       asp-action="Catalog"
+                       class="btn btn-primary mt-auto">
+                        Open
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 text-center">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Class Groups</h5>
+                    <p class="card-text text-muted">
+                        Browse the available class groups
+                        and their courses.
+                    </p>
+                    <a asp-controller="ClassGroup"
+                       asp-action="Catalog"
+                       class="btn btn-primary mt-auto">
+                        Open
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 text-center">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">My Profile</h5>
+                    <p class="card-text text-muted">
+                        Update your personal details and profile picture.
+                    </p>
+                    <a asp-controller="Account"
+                       asp-action="Profile"
+                       class="btn btn-primary mt-auto">
+                        Open
+                    </a>
                 </div>
             </div>
         </div>
