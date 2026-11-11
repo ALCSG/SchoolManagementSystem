@@ -12,6 +12,7 @@ using System.Security.Claims;
 
 namespace SchoolManagementSystem.Controllers
 {
+    [Authorize]
     public class StudentController : Controller
     {
         private readonly IStudentRepository _studentRepository;
@@ -54,6 +55,7 @@ namespace SchoolManagementSystem.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = AppRoles.Employee)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(StudentViewModel model)
         {
@@ -135,6 +137,7 @@ namespace SchoolManagementSystem.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = AppRoles.Employee)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(StudentViewModel model)
         {
@@ -166,7 +169,7 @@ namespace SchoolManagementSystem.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Employee,Admin,Student")]
+        [Authorize(Roles = AppRoles.Employee + "," + AppRoles.Student)]
         public async Task<IActionResult> Details(int id)
         {
             var student = await _studentRepository.GetByIdWithDetailsAsync(id);
@@ -174,10 +177,7 @@ namespace SchoolManagementSystem.Controllers
             if (student == null)
                 return NotFound();
 
-            var isStaff = User.IsInRole("Admin") ||
-                          User.IsInRole("Employee");
-
-            if (!isStaff)
+            if (!User.IsInRole(AppRoles.Employee))
             {
                 var appUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -203,6 +203,7 @@ namespace SchoolManagementSystem.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = AppRoles.Employee)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

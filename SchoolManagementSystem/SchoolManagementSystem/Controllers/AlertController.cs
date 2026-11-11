@@ -8,6 +8,7 @@ using System.Security.Claims;
 
 namespace SchoolManagementSystem.Controllers
 {
+    [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Employee)]
     public class AlertController : Controller
     {
         private readonly IAlertRepository _alertRepository;

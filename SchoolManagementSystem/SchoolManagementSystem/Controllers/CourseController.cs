@@ -91,6 +91,7 @@ namespace SchoolManagementSystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<IActionResult> Edit(int id)
         {
             var course = await _courseRepository.GetByIdWithDetailsAsync(id);
@@ -109,6 +110,7 @@ namespace SchoolManagementSystem.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = AppRoles.Admin)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(CourseViewModel model)
         {
@@ -138,6 +140,7 @@ namespace SchoolManagementSystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<IActionResult> Delete(int id)
         {
             var course = await _courseRepository.GetByIdWithDetailsAsync(id);
@@ -148,6 +151,7 @@ namespace SchoolManagementSystem.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = AppRoles.Admin)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

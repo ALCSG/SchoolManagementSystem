@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementSystem.Data.Entities;
 using SchoolManagementSystem.Data.Interface;
+using SchoolManagementSystem.Helpers;
 using SchoolManagementSystem.Models;
 
 namespace SchoolManagementSystem.Controllers
 {
+    [Authorize(Roles = AppRoles.Employee)]
     public class EnrollmentController : Controller
     {
         private readonly IStudentRepository _studentRepository;

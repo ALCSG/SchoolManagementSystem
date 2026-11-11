@@ -5,10 +5,10 @@ using Microsoft.IdentityModel.Tokens;
 using SchoolManagementSystem.Data.Entities;
 using SchoolManagementSystem.Helpers;
 using SchoolManagementSystem.Models;
-using System.Security.Claims;
 
 namespace SchoolManagementSystem.Controllers
 {
+    [Authorize]
     public class AccountController : Controller
     {
         private readonly SignInManager<AppUser> _signInManager;
@@ -70,7 +70,6 @@ namespace SchoolManagementSystem.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
@@ -80,7 +79,6 @@ namespace SchoolManagementSystem.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> Profile()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -101,7 +99,6 @@ namespace SchoolManagementSystem.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Profile(ProfileViewModel model)
         {
@@ -207,7 +204,7 @@ namespace SchoolManagementSystem.Controllers
         [AllowAnonymous]
         public IActionResult ResetPassword(string userId, string token)
         {
-            if (userId.IsNullOrEmpty() || token.IsNullOrEmpty() )
+            if (userId.IsNullOrEmpty() || token.IsNullOrEmpty())
                 return NotFound();
 
             var model = new ResetPasswordViewModel
@@ -236,13 +233,13 @@ namespace SchoolManagementSystem.Controllers
                 return View(model);
             }
 
-            var result = await _userManager.ResetPasswordAsync(user,model.Token,model.Password);
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
 
             if (!result.Succeeded)
             {
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty,error.Description);
+                    ModelState.AddModelError(string.Empty, error.Description);
                 }
 
                 return View(model);

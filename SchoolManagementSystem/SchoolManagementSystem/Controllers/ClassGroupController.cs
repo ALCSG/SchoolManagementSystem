@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementSystem.Data.Entities;
 using SchoolManagementSystem.Data.Interface;
+using SchoolManagementSystem.Helpers;
 using SchoolManagementSystem.Models;
 
 namespace SchoolManagementSystem.Controllers
@@ -34,6 +35,7 @@ namespace SchoolManagementSystem.Controllers
                 });
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> Catalog()
         {
             var classGroups = await _classGroupRepository.GetAllWithDetailsAsync();
@@ -41,6 +43,7 @@ namespace SchoolManagementSystem.Controllers
             return View(classGroups);
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> PublicDetails(int id)
         {
             var classGroup = await _classGroupRepository.GetByIdWithDetailsAsync(id);
@@ -51,7 +54,7 @@ namespace SchoolManagementSystem.Controllers
             return View(classGroup);
         }
 
-        [Authorize(Roles = "Admin,Employee")]
+        [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Employee)]
         public async Task<IActionResult> Details(int id)
         {
             var classGroup = await _classGroupRepository.GetByIdWithDetailsAsync(id);
@@ -62,7 +65,7 @@ namespace SchoolManagementSystem.Controllers
             return View(classGroup);
         }
 
-        [Authorize(Roles = "Admin,Employee")]
+        [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Employee)]
         public async Task<IActionResult> Index()
         {
             var classGroups = await _classGroupRepository.GetAllWithDetailsAsync();
@@ -70,7 +73,7 @@ namespace SchoolManagementSystem.Controllers
             return View(classGroups);
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<IActionResult> Create()
         {
             var model = new ClassGroupViewModel
@@ -82,7 +85,7 @@ namespace SchoolManagementSystem.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = AppRoles.Admin)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ClassGroupViewModel model)
         {
@@ -108,7 +111,7 @@ namespace SchoolManagementSystem.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<IActionResult> Edit(int id)
         {
             var classGroup = await _classGroupRepository.GetByIdAsync(id);
@@ -128,7 +131,7 @@ namespace SchoolManagementSystem.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = AppRoles.Admin)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ClassGroupViewModel model)
         {
@@ -162,7 +165,7 @@ namespace SchoolManagementSystem.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<IActionResult> Delete(int id)
         {
             var classGroup = await _classGroupRepository.GetByIdWithDetailsAsync(id);
@@ -174,7 +177,7 @@ namespace SchoolManagementSystem.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = AppRoles.Admin)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -202,6 +205,7 @@ namespace SchoolManagementSystem.Controllers
             }
         }
 
+        [Authorize(Roles = AppRoles.Employee)]
         public async Task<IActionResult> Grades(int id)
         {
             var classGroup = await _classGroupRepository.GetByIdWithGradesAsync(id);

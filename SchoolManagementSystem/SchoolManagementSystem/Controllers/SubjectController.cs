@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementSystem.Data.Entities;
 using SchoolManagementSystem.Data.Interface;
+using SchoolManagementSystem.Helpers;
 
 namespace SchoolManagementSystem.Controllers
 {
+    [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Employee)]
     public class SubjectController : Controller
     {
         private readonly ISubjectRepository _subjectRepository;
