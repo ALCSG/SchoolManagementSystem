@@ -1,10 +1,13 @@
 ﻿@using SchoolManagementSystem.Data.Entities
-@model SchoolManagementSystem.Data.Entities.ClassGroup
+@model SchoolManagementSystem.Models.ClassGroupGradesViewModel
 
 @{
     ViewData["Title"] = "Grades & Absences";
 
-    var students = Model.Students?
+    var classGroup = Model.ClassGroup;
+    var maxAbsencePercentage = Model.MaxAbsencePercentage;
+
+    var students = classGroup.Students?
         .Where(s => !s.IsArchived)
         .OrderBy(s => s.FirstName)
         .ThenBy(s => s.LastName)
@@ -20,7 +23,7 @@
     var gradedEnrollmentCount = finalGrades
         .Count(grade => grade.HasValue);
 
-    var courseSubjects = Model.Course?.Subjects?.ToList()
+    var courseSubjects = classGroup.Course?.Subjects?.ToList()
         ?? new List<Subject>();
 
     var subjects = courseSubjects
@@ -65,8 +68,13 @@
             row[$"Absences_{key}"] =
                 enrollment?.AbsenceCount ?? 0;
 
+            row[$"Excluded_{key}"] =
+                enrollment?.IsExcludedByAbsences(
+                    maxAbsencePercentage) ?? false;
+
             row[$"Approved_{key}"] =
-                enrollment?.IsApproved ?? false;
+                enrollment?.IsApproved(
+                    maxAbsencePercentage) ?? false;
 
             row[$"Enrolled_{key}"] = isEnrolled;
         }
@@ -76,17 +84,18 @@
 }
 
 <div class="d-flex flex-wrap justify-content-between
-    align-items-center gap-3 mb-4">
+            align-items-center gap-3 mb-4">
     <div>
         <h1 class="h3 mb-1">Grades & Absences</h1>
 
         <p class="text-muted mb-0">
-            @(Model.Course?.Name ?? "Course not available")
-            · @Model.Description
+            @(classGroup.Course?.Name ?? "Course not available")
+            · @classGroup.Description
         </p>
     </div>
 
-    <a asp-action="Index"
+    <a asp-controller="ClassGroup"
+       asp-action="Index"
        class="btn btn-outline-secondary">
         Back to class groups
     </a>
@@ -113,13 +122,33 @@
                             Based on @gradedEnrollmentCount
                             final @(gradedEnrollmentCount == 1
                                 ? "grade"
-                                : "grades")
+                                : "grades"), including grades from
+                            students excluded by absences.
                         </span>
                     }
                     else
                     {
                         <span>No final grades available yet.</span>
                     }
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="small text-muted mb-2">
+                    Absence limit
+                </h2>
+
+                <div class="fs-2 fw-semibold mb-1">
+                    @(maxAbsencePercentage)%
+                </div>
+
+                <p class="small text-muted mb-0">
+                    Students are excluded from a subject
+                    when their absence percentage exceeds this limit.
                 </p>
             </div>
         </div>
@@ -159,7 +188,6 @@ else
 
             args.cell.replaceChildren();
 
-            // No enrollment for this subject.
             if (!data["Enrolled_" + subjectKey]) {
                 const dash = document.createElement("span");
                 dash.className = "text-muted";
@@ -172,21 +200,37 @@ else
             const grade = data[field];
             const absences = data["Absences_" + subjectKey];
             const approved = data["Approved_" + subjectKey];
+            const excluded = data["Excluded_" + subjectKey];
+            const hasGrade = grade !== null && grade !== undefined;
 
             const container = document.createElement("div");
             container.className =
                 "d-flex flex-column align-items-center gap-1 py-1";
 
             const gradeElement = document.createElement("span");
+            gradeElement.className = "small";
+            gradeElement.textContent = hasGrade
+                ? Number(grade).toFixed(1)
+                : "No grade";
 
-            if (grade === null || grade === undefined) {
-                gradeElement.className = "small text-muted";
-                gradeElement.textContent = "No grade";
+            if (!hasGrade) {
+                gradeElement.classList.add("text-muted");
+            }
+
+            const statusElement = document.createElement("span");
+
+            if (excluded) {
+                statusElement.className = "badge bg-danger";
+                statusElement.textContent = "Excluded by absences";
+            } else if (!hasGrade) {
+                statusElement.className = "badge bg-secondary";
+                statusElement.textContent = "Not graded";
+            } else if (approved) {
+                statusElement.className = "badge bg-success";
+                statusElement.textContent = "Approved";
             } else {
-                gradeElement.className =
-                    "badge " + (approved ? "bg-success" : "bg-danger");
-
-                gradeElement.textContent = Number(grade).toFixed(1);
+                statusElement.className = "badge bg-danger";
+                statusElement.textContent = "Failed";
             }
 
             const absencesElement = document.createElement("small");
@@ -195,6 +239,7 @@ else
                 absences + (absences === 1 ? " absence" : " absences");
 
             container.appendChild(gradeElement);
+            container.appendChild(statusElement);
             container.appendChild(absencesElement);
 
             args.cell.appendChild(container);
@@ -242,16 +287,19 @@ else
                                type="number"
                                format="N1"
                                textAlign="Center"
-                               width="170"
-                               minWidth="150">
+                               width="190"
+                               minWidth="170">
                 </e-grid-column>
             }
         </e-grid-columns>
     </ejs-grid>
 
     <p class="small text-muted mt-2">
-        Each subject shows the final grade and absence count.
+        Each subject shows the final grade, academic status
+        and absence count.
         A dash means the student is not enrolled.
-        Subject sorting and filtering use the final grade.
+        Exclusion by absences takes precedence over the final grade.
+        Subject sorting and filtering use the final grade,
+        not the displayed status.
     </p>
 }

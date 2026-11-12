@@ -21,7 +21,16 @@ namespace SchoolManagementSystem.Data.Entities
         [Range(0, 20)]
         public double? FinalGrade { get; set; }
 
-        [NotMapped]
-        public bool IsApproved => FinalGrade.HasValue && FinalGrade.Value >= 9.5;
+        public bool IsApproved(int maxAbsenceCount) => FinalGrade.HasValue && FinalGrade.Value >= 9.5 && !IsExcludedByAbsences(maxAbsenceCount);
+
+        public bool IsExcludedByAbsences(int maxAbsenceCount)
+        {
+            if (Subject == null || Subject.TotalHours <= 0)
+                throw new InvalidOperationException("A subject with valid total hours is required.");
+
+            var absencePercentage = AbsenceCount * 100 / Subject.TotalHours;
+
+            return absencePercentage > maxAbsenceCount;
+        }
     }
 }

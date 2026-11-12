@@ -13,13 +13,16 @@ namespace SchoolManagementSystem.Controllers
     {
         private readonly IClassGroupRepository _classGroupRepository;
         private readonly ICourseRepository _courseRepository;
+        private readonly ISchoolSettingsRepository _settingsRepository;
 
         public ClassGroupController(
             IClassGroupRepository classGroupRepository,
-            ICourseRepository courseRepository)
+            ICourseRepository courseRepository,
+            ISchoolSettingsRepository settingsRepository)
         {
             _classGroupRepository = classGroupRepository;
             _courseRepository = courseRepository;
+            _settingsRepository = settingsRepository;
         }
 
         private async Task<IEnumerable<SelectListItem>> GetCoursesSelectListAsync()
@@ -205,15 +208,32 @@ namespace SchoolManagementSystem.Controllers
             }
         }
 
+        [HttpGet]
         [Authorize(Roles = AppRoles.Employee)]
         public async Task<IActionResult> Grades(int id)
         {
-            var classGroup = await _classGroupRepository.GetByIdWithGradesAsync(id);
+            var classGroup = await _classGroupRepository
+                .GetByIdWithGradesAsync(id);
 
             if (classGroup == null)
                 return NotFound();
 
-            return View(classGroup);
+            var settings = await _settingsRepository.GetSettingsAsync();
+
+            if (settings == null)
+            {
+                return Problem(
+                    statusCode: 500,
+                    detail: "School settings have not been configured.");
+            }
+
+            var model = new ClassGroupGradesViewModel
+            {
+                ClassGroup = classGroup,
+                MaxAbsencePercentage = settings.MaxAbsencePercentage
+            };
+
+            return View(model);
         }
     }
 }

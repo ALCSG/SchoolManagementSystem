@@ -1,9 +1,12 @@
-﻿@model SchoolManagementSystem.Data.Entities.Student
+﻿@model SchoolManagementSystem.Models.MyLearningViewModel
 
 @{
     ViewData["Title"] = "My Learning";
 
-    var enrollments = Model.Enrollments
+    var student = Model.Student;
+    var maxAbsencePercentage = Model.MaxAbsencePercentage;
+
+    var enrollments = student.Enrollments
         .OrderBy(e => e.Subject.Name)
         .ToList();
 }
@@ -12,25 +15,30 @@
     <h1 class="h3 mb-2">My Learning</h1>
 
     <p class="text-muted mb-0">
-        View your subjects, grades and recorded absences.
+        View your subjects, grades, recorded absences and academic status.
     </p>
 </div>
 
 <section class="card shadow-sm mb-4">
     <div class="card-body p-4">
         <h2 class="h5 mb-3">
-            @Model.FirstName @Model.LastName
+            @student.FirstName @student.LastName
         </h2>
 
         <dl class="row mb-0">
             <dt class="col-sm-3">Course</dt>
             <dd class="col-sm-9">
-                @(Model.ClassGroup?.Course?.Name ?? "Not available")
+                @(student.ClassGroup?.Course?.Name ?? "Not available")
             </dd>
 
             <dt class="col-sm-3">Class group</dt>
+            <dd class="col-sm-9">
+                @(student.ClassGroup?.Description ?? "Not assigned")
+            </dd>
+
+            <dt class="col-sm-3">Absence limit</dt>
             <dd class="col-sm-9 mb-0">
-                @(Model.ClassGroup?.Description ?? "Not assigned")
+                @(maxAbsencePercentage)%
             </dd>
         </dl>
     </div>
@@ -59,12 +67,15 @@
                     <thead>
                         <tr>
                             <th scope="col">Subject</th>
+
                             <th scope="col" class="text-center">
                                 Absences
                             </th>
+
                             <th scope="col" class="text-center">
                                 Final grade
                             </th>
+
                             <th scope="col">Status</th>
                         </tr>
                     </thead>
@@ -72,8 +83,13 @@
                     <tbody>
                         @foreach (var enrollment in enrollments)
                         {
+                            var isExcluded = enrollment
+                                .IsExcludedByAbsences(maxAbsencePercentage);
+
                             <tr>
-                                <td>@enrollment.Subject.Name</td>
+                                <td>
+                                    @enrollment.Subject.Name
+                                </td>
 
                                 <td class="text-center">
                                     @enrollment.AbsenceCount
@@ -84,16 +100,28 @@
                                 </td>
 
                                 <td>
-                                    @if (enrollment.FinalGrade.HasValue)
+                                    @if (isExcluded)
                                     {
-                                        <span class="badge @(enrollment.IsApproved ? "bg-success" : "bg-danger")">
-                                            @(enrollment.IsApproved ? "Approved" : "Failed")
+                                        <span class="badge bg-danger">
+                                            Excluded by absences
+                                        </span>
+                                    }
+                                    else if (!enrollment.FinalGrade.HasValue)
+                                    {
+                                        <span class="badge bg-secondary">
+                                            Not graded
+                                        </span>
+                                    }
+                                    else if (enrollment.IsApproved(maxAbsencePercentage))
+                                    {
+                                        <span class="badge bg-success">
+                                            Approved
                                         </span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-secondary">
-                                            Not graded
+                                        <span class="badge bg-danger">
+                                            Failed
                                         </span>
                                     }
                                 </td>
@@ -105,7 +133,9 @@
 
             <p class="text-muted small mt-3 mb-0">
                 Final grades are shown on a scale of 0 to 20.
-                Absences show the recorded count for each subject.
+                Students whose absence percentage exceeds
+                @(maxAbsencePercentage)% are excluded from the
+                corresponding subject, regardless of their final grade.
             </p>
         }
     </div>

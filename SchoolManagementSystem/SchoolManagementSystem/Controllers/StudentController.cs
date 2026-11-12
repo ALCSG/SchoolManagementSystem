@@ -20,19 +20,22 @@ namespace SchoolManagementSystem.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly IWebHostEnvironment _environment;
         private readonly IAlertRepository _alertRepository;
+        private readonly ISchoolSettingsRepository _settingsRepository;
 
         public StudentController(
             IStudentRepository studentRepository,
             IClassGroupRepository classGroupRepository,
             UserManager<AppUser> userManager,
             IWebHostEnvironment environment,
-            IAlertRepository alertRepository)
+            IAlertRepository alertRepository,
+            ISchoolSettingsRepository settingsRepository)
         {
             _studentRepository = studentRepository;
             _classGroupRepository = classGroupRepository;
             _userManager = userManager;
             _environment = environment;
             _alertRepository = alertRepository;
+            _settingsRepository = settingsRepository;
         }
 
         [HttpGet]
@@ -188,7 +191,15 @@ namespace SchoolManagementSystem.Controllers
                 }
             }
 
-            return View(student);
+            var settings = await _settingsRepository.GetSettingsAsync();
+
+            var model = new StudentDetailsViewModel
+            {
+                Student = student,
+                MaxAbsencePercentage = settings.MaxAbsencePercentage
+            };
+
+            return View(model);
         }
 
         [HttpGet]

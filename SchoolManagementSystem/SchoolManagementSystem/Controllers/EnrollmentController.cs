@@ -113,7 +113,7 @@ namespace SchoolManagementSystem.Controllers
             {
                 EnrollmentId = enrollment.EnrollmentId,
                 StudentId = enrollment.StudentId,
-                StudentName = $"{enrollment.Student.AppUser.FirstName} {enrollment.Student.AppUser.LastName}",
+                StudentName = $"{enrollment.Student.FirstName} {enrollment.Student.LastName}",
                 SubjectName = enrollment.Subject.Name,
                 FinalGrade = enrollment.FinalGrade,
                 AbsenceCount = enrollment.AbsenceCount
@@ -133,7 +133,7 @@ namespace SchoolManagementSystem.Controllers
 
             if (!ModelState.IsValid)
             {
-                model.StudentName = $"{enrollment.Student.AppUser.FirstName} {enrollment.Student.AppUser.LastName}";
+                model.StudentName = $"{enrollment.Student.FirstName} {enrollment.Student.LastName}";
                 model.SubjectName = enrollment.Subject.Name;
 
                 return View(model);
