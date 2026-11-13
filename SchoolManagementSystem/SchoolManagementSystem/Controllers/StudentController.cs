@@ -160,15 +160,28 @@ namespace SchoolManagementSystem.Controllers
             student.Email = model.Email;
             student.ClassGroupId = model.ClassGroupId;
 
-            if (model.PhotoFile != null && model.PhotoFile.Length > 0)
+            try
             {
-                student.StudentPhotoPath = await SavePhotoAsync(model.PhotoFile);
+                if (model.PhotoFile != null && model.PhotoFile.Length > 0)
+                {
+                    student.StudentPhotoPath = await SavePhotoAsync(model.PhotoFile);
+                }
+
+                _studentRepository.Update(student);
+                await _studentRepository.SaveChangesAsync();
+
+                TempData["Message"] = "Student updated successfully";
+
+                return RedirectToAction(nameof(Index));
             }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or DbUpdateException)
+            {
+                ModelState.AddModelError(string.Empty, "The student could not be updated. Please try again.");
 
-            _studentRepository.Update(student);
-            await _studentRepository.SaveChangesAsync();
+                model.ClassGroups = await GetClassGroupsSelectListAsync();
 
-            return RedirectToAction(nameof(Index));
+                return View(model);
+            }
         }
 
         [HttpGet]
