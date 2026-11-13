@@ -261,10 +261,18 @@ namespace SchoolManagementSystem.Controllers
 
             var student = await _studentRepository.GetByAppUserIdWithDetailsAsync(appUserId);
 
-            if(student == null) 
+            if (student == null)
                 return NotFound();
 
-            return View(student);
+            var settings = await _settingsRepository.GetSettingsAsync();
+
+            var model = new MyLearningViewModel
+            {
+                Student = student,
+                MaxAbsencePercentage = settings!.MaxAbsencePercentage
+            };
+
+            return View(model);
         }
 
         private async Task<string> SavePhotoAsync(IFormFile file)
