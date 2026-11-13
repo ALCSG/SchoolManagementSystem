@@ -18,12 +18,6 @@ namespace SchoolManagementSystem.Controllers
             _alertRepository = alertRepository;
         }
 
-        [Authorize(Roles = AppRoles.Employee)]
-        public IActionResult Index()
-        {
-            return View();
-        }
-
         [HttpGet]
         [Authorize(Roles = AppRoles.Employee)]
         public IActionResult Create()
