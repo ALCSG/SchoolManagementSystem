@@ -64,7 +64,6 @@
                                 {
                                     <li class="nav-item">
                                         <a class="nav-link"
-                                           asp-area=""
                                            asp-controller="Course"
                                            asp-action="Index">
                                             Courses
@@ -73,10 +72,17 @@
 
                                     <li class="nav-item">
                                         <a class="nav-link"
-                                           asp-area=""
                                            asp-controller="Subject"
                                            asp-action="Index">
                                             Subjects
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link"
+                                           asp-controller="ClassGroup"
+                                           asp-action="Index">
+                                            Class Groups
                                         </a>
                                     </li>
                                 }
@@ -85,7 +91,6 @@
                                 {
                                     <li class="nav-item">
                                         <a class="nav-link"
-                                           asp-area=""
                                            asp-controller="Dashboard"
                                            asp-action="Index">
                                             Dashboard
@@ -94,7 +99,6 @@
 
                                     <li class="nav-item">
                                         <a class="nav-link"
-                                           asp-area=""
                                            asp-controller="SchoolSettings"
                                            asp-action="Index">
                                             Settings
@@ -106,16 +110,6 @@
                                 {
                                     <li class="nav-item">
                                         <a class="nav-link"
-                                           asp-area=""
-                                           asp-controller="ClassGroup"
-                                           asp-action="Index">
-                                            Class Groups
-                                        </a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a class="nav-link"
-                                           asp-area=""
                                            asp-controller="Student"
                                            asp-action="Index">
                                             Students
@@ -124,7 +118,6 @@
 
                                     <li class="nav-item">
                                         <a class="nav-link"
-                                           asp-area=""
                                            asp-controller="Alert"
                                            asp-action="Create">
                                             Report a problem
@@ -136,37 +129,31 @@
                                 {
                                     <li class="nav-item">
                                         <a class="nav-link"
-                                           asp-area=""
                                            asp-controller="Student"
                                            asp-action="MyLearning">
                                             My Learning
                                         </a>
                                     </li>
+                                }
 
-                                    @if (!User.IsInRole(AppRoles.Admin) &&
-                                         !User.IsInRole(AppRoles.Employee))
-                                    {
-                                        <li class="nav-item">
-                                            <a class="nav-link"
-                                               asp-area=""
-                                               asp-controller="Course"
-                                               asp-action="Catalog">
-                                                Courses
-                                            </a>
-                                        </li>
-                                    }
+                                @if (!User.IsInRole(AppRoles.Admin) &&
+                                     !User.IsInRole(AppRoles.Employee))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link"
+                                           asp-controller="Course"
+                                           asp-action="Catalog">
+                                            Courses
+                                        </a>
+                                    </li>
 
-                                    @if (!User.IsInRole(AppRoles.Employee))
-                                    {
-                                        <li class="nav-item">
-                                            <a class="nav-link"
-                                               asp-area=""
-                                               asp-controller="ClassGroup"
-                                               asp-action="Catalog">
-                                                Class Groups
-                                            </a>
-                                        </li>
-                                    }
+                                    <li class="nav-item">
+                                        <a class="nav-link"
+                                           asp-controller="ClassGroup"
+                                           asp-action="Catalog">
+                                            Class Groups
+                                        </a>
+                                    </li>
                                 }
                             </ul>
 
@@ -178,6 +165,7 @@
 
                 <div class="container appbar-heading">
                     <h2>School Management System</h2>
+
                     <p>
                         Connecting students, courses and your school community.
                     </p>
@@ -204,6 +192,20 @@
                 </div>
             }
 
+            @if (TempData["Error"] is string errorMessage)
+            {
+                <div class="alert alert-danger alert-dismissible fade show"
+                     role="alert">
+                    @errorMessage
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Close">
+                    </button>
+                </div>
+            }
+
             @RenderBody()
 
         </main>
@@ -212,8 +214,7 @@
     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2026 - SchoolManagementSystem -
-            <a asp-area=""
-               asp-controller="Home"
+            <a asp-controller="Home"
                asp-action="Privacy">
                 Privacy
             </a>
