@@ -22,7 +22,7 @@ namespace SchoolManagementSystem.Data.Repository
                     .ThenInclude(g => g.Course)
                 .Include(s => s.Enrollments)
                     .ThenInclude(e => e.Subject)
-                .FirstOrDefaultAsync(s => s.AppUserId == appUserId && !s.IsArchived);
+                .FirstOrDefaultAsync(s => s.AppUserId == appUserId);
 
         public async Task<Student?> GetByIdWithDetailsAsync(int id)
             => await _context.Students

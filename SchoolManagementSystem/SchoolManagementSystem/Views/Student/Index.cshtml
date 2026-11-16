@@ -4,19 +4,50 @@
 @{
     ViewData["Title"] = "Students";
 
-    var students = Model.Select(student => new
+    var students = Model.ToList();
+
+    var activeStudents = students
+        .Where(student => !student.IsArchived)
+        .Select(student => new
+        {
+            StudentId = student.StudentId,
+            FullName = $"{student.FirstName} {student.LastName}",
+            ClassGroupName =
+                student.ClassGroup?.Description ?? "Not assigned",
+            CourseName =
+                student.ClassGroup?.Course?.Name ?? "Not available",
+            DetailsUrl = Url.Action("Details", "Student",
+                new { id = student.StudentId }),
+            EditUrl = Url.Action("Edit", "Student",
+                new { id = student.StudentId }),
+            ArchiveUrl = Url.Action("Delete", "Student",
+                new { id = student.StudentId })
+        })
+        .ToList();
+
+    var archivedStudents = students
+        .Where(student => student.IsArchived)
+        .Select(student => new
+        {
+            StudentId = student.StudentId,
+            FullName = $"{student.FirstName} {student.LastName}",
+            ClassGroupName =
+                student.ClassGroup?.Description ?? "Not assigned",
+            CourseName =
+                student.ClassGroup?.Course?.Name ?? "Not available",
+            DetailsUrl = Url.Action("Details", "Student",
+                new { id = student.StudentId })
+        })
+        .ToList();
+
+    var toolbarItems = new List<string> { "Search" };
+
+    var searchFields = new string[]
     {
-        StudentId = student.StudentId,
-        FullName = $"{student.FirstName} {student.LastName}",
-        ClassGroupName = student.ClassGroup?.Description ?? "Not assigned",
-        CourseName = student.ClassGroup?.Course?.Name ?? "Not available",
-        DetailsUrl = Url.Action("Details", "Student",
-            new { id = student.StudentId }),
-        EditUrl = Url.Action("Edit", "Student",
-            new { id = student.StudentId }),
-        DeleteUrl = Url.Action("Delete", "Student",
-            new { id = student.StudentId })
-    }).ToList();
+        "FullName",
+        "ClassGroupName",
+        "CourseName"
+    };
 }
 
 <div class="d-flex flex-wrap justify-content-between
@@ -28,7 +59,7 @@
     </a>
 </div>
 
-<script id="studentActionsTemplate" type="text/x-template">
+<script id="activeStudentActionsTemplate" type="text/x-template">
     <div class="d-flex flex-wrap gap-1">
         <a href="${DetailsUrl}"
            class="btn btn-sm btn-outline-secondary">
@@ -39,65 +70,138 @@
            class="btn btn-sm btn-outline-primary">
             Edit
         </a>
+    </div>
+</script>
 
-        <a href="${DeleteUrl}"
-           class="btn btn-sm btn-outline-danger">
-            Delete
+<script id="archivedStudentActionsTemplate" type="text/x-template">
+    <div class="d-flex flex-wrap gap-1">
+        <a href="${DetailsUrl}"
+           class="btn btn-sm btn-outline-secondary">
+            Details
         </a>
     </div>
 </script>
 
-<ejs-grid id="StudentsGrid"
-          dataSource="@students"
-          allowPaging="true"
-          allowSorting="true"
-          allowFiltering="true"
-          toolbar="@(new List<string> { "Search" })"
-          width="100%">
+<section class="mb-5">
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <h2 class="h5 mb-0">Active students</h2>
 
-    <e-grid-pagesettings pageSize="10"
-                         pageCount="5">
-    </e-grid-pagesettings>
+        <span class="badge bg-primary">
+            @activeStudents.Count
+        </span>
+    </div>
 
-    <e-grid-filtersettings type="Menu">
-    </e-grid-filtersettings>
+    <ejs-grid id="ActiveStudentsGrid"
+              dataSource="@activeStudents"
+              allowPaging="true"
+              allowSorting="true"
+              allowFiltering="true"
+              toolbar="@toolbarItems"
+              width="100%">
 
-    <e-grid-searchsettings fields="@(new string[]
-                           {
-                               "FullName",
-                               "ClassGroupName",
-                               "CourseName"
-                           })"
-                           operator="contains"
-                           ignoreCase="true">
-    </e-grid-searchsettings>
+        <e-grid-pagesettings pageSize="10"
+                             pageCount="5">
+        </e-grid-pagesettings>
 
-    <e-grid-columns>
-        <e-grid-column field="StudentId"
-                       isPrimaryKey="true"
-                       visible="false">
-        </e-grid-column>
+        <e-grid-filtersettings type="Menu">
+        </e-grid-filtersettings>
 
-        <e-grid-column field="FullName"
-                       headerText="Name"
-                       width="230">
-        </e-grid-column>
+        <e-grid-searchsettings fields="@searchFields"
+                               operator="contains"
+                               ignoreCase="true">
+        </e-grid-searchsettings>
 
-        <e-grid-column field="ClassGroupName"
-                       headerText="Class"
-                       width="180">
-        </e-grid-column>
+        <e-grid-columns>
+            <e-grid-column field="StudentId"
+                           isPrimaryKey="true"
+                           visible="false">
+            </e-grid-column>
 
-        <e-grid-column field="CourseName"
-                       headerText="Course"
-                       width="230">
-        </e-grid-column>
+            <e-grid-column field="FullName"
+                           headerText="Name"
+                           width="230">
+            </e-grid-column>
 
-        <e-grid-column headerText="Actions"
-                       template="#studentActionsTemplate"
-                       allowSorting="false"
-                       allowFiltering="false"
-                       width="260">
-        </e-grid-column>
-    </e-grid-columns>
-</ejs-grid>
+            <e-grid-column field="ClassGroupName"
+                           headerText="Class"
+                           width="180">
+            </e-grid-column>
+
+            <e-grid-column field="CourseName"
+                           headerText="Course"
+                           width="230">
+            </e-grid-column>
+
+            <e-grid-column headerText="Actions"
+                           template="#activeStudentActionsTemplate"
+                           allowSorting="false"
+                           allowFiltering="false"
+                           width="260">
+            </e-grid-column>
+        </e-grid-columns>
+    </ejs-grid>
+</section>
+
+<section class="mb-4">
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <h2 class="h5 mb-0">Archived students</h2>
+
+        <span class="badge bg-secondary">
+            @archivedStudents.Count
+        </span>
+    </div>
+
+    <p class="text-muted small">
+        Archived student records are retained for historical consultation.
+    </p>
+
+    <ejs-grid id="ArchivedStudentsGrid"
+              dataSource="@archivedStudents"
+              allowPaging="true"
+              allowSorting="true"
+              allowFiltering="true"
+              toolbar="@toolbarItems"
+              width="100%">
+
+        <e-grid-pagesettings pageSize="10"
+                             pageCount="5">
+        </e-grid-pagesettings>
+
+        <e-grid-filtersettings type="Menu">
+        </e-grid-filtersettings>
+
+        <e-grid-searchsettings fields="@searchFields"
+                               operator="contains"
+                               ignoreCase="true">
+        </e-grid-searchsettings>
+
+        <e-grid-columns>
+            <e-grid-column field="StudentId"
+                           isPrimaryKey="true"
+                           visible="false">
+            </e-grid-column>
+
+            <e-grid-column field="FullName"
+                           headerText="Name"
+                           width="230">
+            </e-grid-column>
+
+            <e-grid-column field="ClassGroupName"
+                           headerText="Class"
+                           width="180">
+            </e-grid-column>
+
+            <e-grid-column field="CourseName"
+                           headerText="Course"
+                           width="230">
+            </e-grid-column>
+
+            <e-grid-column headerText="Actions"
+                           template="#archivedStudentActionsTemplate"
+                           allowSorting="false"
+                           allowFiltering="false"
+                           width="260">
+            </e-grid-column>
+        </e-grid-columns>
+    </ejs-grid>
+</section>
