@@ -1,0 +1,76 @@
+﻿@model SchoolManagementSystem.Data.Entities.ClassGroup
+
+@{
+    ViewData["Title"] = "Class Group Details";
+
+    var subjects = Model.Course.Subjects
+        .OrderBy(s => s.Name)
+        .ToList();
+}
+
+<div class="mb-4">
+    <h1 class="h3 mb-2">@Model.Description</h1>
+
+    <p class="text-muted mb-0">
+        View this class group's course and subjects.
+    </p>
+</div>
+
+<section class="card shadow-sm mb-4">
+    <div class="card-body p-4">
+        <h2 class="h5 mb-3">Class group information</h2>
+
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Class group</dt>
+            <dd class="col-sm-9">@Model.Description</dd>
+
+            <dt class="col-sm-3">Course</dt>
+            <dd class="col-sm-9 mb-0">@Model.Course.Name</dd>
+        </dl>
+    </div>
+</section>
+
+<section class="card shadow-sm mb-4">
+    <div class="card-body p-4">
+        <h2 class="h5 mb-3">Subjects</h2>
+
+        @if (subjects.Count == 0)
+        {
+            <p class="text-muted mb-0">
+                No subjects are available for this course yet.
+            </p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th scope="col">Subject</th>
+                            <th scope="col" class="text-end">
+                                Total hours
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var subject in subjects)
+                        {
+                            <tr>
+                                <td>@subject.Name</td>
+                                <td class="text-end">
+                                    @subject.TotalHours
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</section>
+
+<a asp-controller="ClassGroup"
+   asp-action="Catalog"
+   class="btn btn-secondary">
+    Back to class groups
+</a>

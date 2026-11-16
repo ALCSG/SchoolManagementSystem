@@ -19,8 +19,9 @@ namespace SchoolManagementSystem.Data.Repository
         public async Task<ClassGroup?> GetByIdWithDetailsAsync(int id)
             => await _context.ClassGroups
                 .Include(g => g.Course)
+                    .ThenInclude(c => c.Subjects)
                 .Include(g => g.Students)
-                .ThenInclude(s => s.AppUser)
+                    .ThenInclude(s => s.AppUser)
                 .FirstOrDefaultAsync(g => g.ClassGroupId == id);
 
         public async Task<bool> DescriptionExistsInCourseAsync(string description, int courseId, int? excludeClassGroupId = null)
