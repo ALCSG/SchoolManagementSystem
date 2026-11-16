@@ -26,7 +26,7 @@ namespace SchoolManagementSystem.Models
         public string? ProfilePicturePath { get; set; }
 
         [Display(Name = "Profile picture")]
-        [MaxFileSizeHelper(2)]
+        [ImageFileHelper(2)]
         public IFormFile? ProfilePictureFile { get; set; }
     }
 }

@@ -10,7 +10,7 @@ namespace SchoolManagementSystem.Models
         public int StudentId { get; set; }
 
         [Display(Name = "Student photo")]
-        [MaxFileSizeHelper(2)]
+        [ImageFileHelper(2)]
         public IFormFile? PhotoFile { get; set; }
 
         public string? CurrentPhotoPath { get; set; }
