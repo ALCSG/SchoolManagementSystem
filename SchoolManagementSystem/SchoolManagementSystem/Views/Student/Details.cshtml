@@ -7,6 +7,7 @@
     var student = Model.Student;
     var maxAbsencePercentage = Model.MaxAbsencePercentage;
     var isEmployee = User.IsInRole(AppRoles.Employee);
+    var canModifyStudent = isEmployee && !student.IsArchived;
 
     var enrollments = student.Enrollments
         .OrderBy(e => e.Subject.Name)
@@ -47,13 +48,33 @@
             <dd class="col-sm-9">
                 @(maxAbsencePercentage)%
             </dd>
+
+            <dt class="col-sm-3">Status</dt>
+            <dd class="col-sm-9">
+                @if (student.IsArchived)
+                {
+                    <span class="badge bg-secondary">Archived</span>
+                }
+                else
+                {
+                    <span class="badge bg-success">Active</span>
+                }
+            </dd>
+
+            @if (student.IsArchived && student.ArchivedAt.HasValue)
+            {
+                <dt class="col-sm-3">Archived at</dt>
+                <dd class="col-sm-9">
+                    @student.ArchivedAt.Value.ToString("dd/MM/yyyy HH:mm") UTC
+                </dd>
+            }
         </dl>
     </div>
 </div>
 
 <h4 class="mt-4">Enrollments</h4>
 
-@if (isEmployee)
+@if (canModifyStudent)
 {
     <p>
         <a asp-controller="Enrollment"
@@ -74,7 +95,7 @@
                 <th scope="col">Final Grade</th>
                 <th scope="col">Status</th>
 
-                @if (isEmployee)
+                @if (canModifyStudent)
                 {
                     <th scope="col">Actions</th>
                 }
@@ -126,7 +147,7 @@
                             }
                         </td>
 
-                        @if (isEmployee)
+                        @if (canModifyStudent)
                         {
                             <td>
                                 <div class="d-flex flex-wrap gap-2">
@@ -152,7 +173,7 @@
             else
             {
                 <tr>
-                    <td colspan="@(isEmployee ? 5 : 4)"
+                    <td colspan="@(canModifyStudent ? 5 : 4)"
                         class="text-muted">
                         No enrollments yet.
                     </td>
@@ -168,15 +189,41 @@
     subject, regardless of their final grade.
 </p>
 
-<div class="mt-3 d-flex flex-wrap gap-2">
+<div class="mt-3 d-flex flex-wrap align-items-center gap-2">
     @if (isEmployee)
     {
-        <a asp-controller="Student"
-           asp-action="Edit"
-           asp-route-id="@student.StudentId"
-           class="btn btn-primary">
-            Edit student
-        </a>
+        @if (student.IsArchived)
+        {
+            <form asp-controller="Student"
+                  asp-action="Reactivate"
+                  method="post"
+                  class="d-inline">
+
+                <input type="hidden"
+                       name="id"
+                       value="@student.StudentId" />
+
+                <button type="submit" class="btn btn-success">
+                    Reactivate
+                </button>
+            </form>
+        }
+        else
+        {
+            <a asp-controller="Student"
+               asp-action="Edit"
+               asp-route-id="@student.StudentId"
+               class="btn btn-primary">
+                Edit student
+            </a>
+
+            <a asp-controller="Student"
+               asp-action="Delete"
+               asp-route-id="@student.StudentId"
+               class="btn btn-outline-danger">
+                Archive
+            </a>
+        }
 
         <a asp-controller="Student"
            asp-action="Index"

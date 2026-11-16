@@ -14,16 +14,23 @@ namespace SchoolManagementSystem.Controllers
     {
         private readonly IStudentRepository _studentRepository;
         private readonly IEnrollmentRepository _enrollmentRepository;
+        private readonly ILogger<EnrollmentController> _logger;
 
-        public EnrollmentController(IStudentRepository studentRepository, IEnrollmentRepository enrollmentRepository)
+        public EnrollmentController(IStudentRepository studentRepository, IEnrollmentRepository enrollmentRepository, ILogger<EnrollmentController> logger)
         {
             _studentRepository = studentRepository;
             _enrollmentRepository = enrollmentRepository;
+            _logger = logger;
         }
 
         [HttpGet]
         public async Task<IActionResult> Create(int studentId)
         {
+            var blockedResult = await CheckStudentCanBeModifiedAsync(studentId);
+
+            if (blockedResult != null)
+                return blockedResult;
+
             var model = new EnrollmentViewModel { StudentId = studentId };
 
             if (!await PopulateViewModelAsync(model))
@@ -36,6 +43,11 @@ namespace SchoolManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(EnrollmentViewModel model)
         {
+            var blockedResult = await CheckStudentCanBeModifiedAsync(model.StudentId);
+
+            if (blockedResult != null)
+                return blockedResult;
+
             if (!await PopulateViewModelAsync(model))
                 return NotFound();
 
@@ -109,6 +121,11 @@ namespace SchoolManagementSystem.Controllers
             if (enrollment == null)
                 return NotFound();
 
+            var blockedResult = await CheckStudentCanBeModifiedAsync(enrollment.StudentId);
+
+            if (blockedResult != null)
+                return blockedResult;
+
             var model = new EnrollmentViewModel()
             {
                 EnrollmentId = enrollment.EnrollmentId,
@@ -126,25 +143,54 @@ namespace SchoolManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EnrollmentViewModel model)
         {
-            var enrollment = await _enrollmentRepository.GetByIdWithDetailsAsync(model.EnrollmentId);
+            var enrollment = await _enrollmentRepository
+                .GetByIdWithDetailsAsync(model.EnrollmentId);
 
             if (enrollment == null)
                 return NotFound();
 
-            if (!ModelState.IsValid)
-            {
-                model.StudentName = $"{enrollment.Student.FirstName} {enrollment.Student.LastName}";
-                model.SubjectName = enrollment.Subject.Name;
+            var blockedResult =
+                await CheckStudentCanBeModifiedAsync(enrollment.StudentId);
 
+            if (blockedResult != null)
+                return blockedResult;
+
+            model.StudentId = enrollment.StudentId;
+            model.StudentName =$"{enrollment.Student.FirstName} {enrollment.Student.LastName}";
+            model.SubjectName = enrollment.Subject.Name;
+
+            if (!ModelState.IsValid)
                 return View(model);
-            }
 
             enrollment.AbsenceCount = model.AbsenceCount;
             enrollment.FinalGrade = model.FinalGrade;
 
-            await _enrollmentRepository.SaveChangesAsync();
+            try
+            {
+                await _enrollmentRepository.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogWarning(ex, "Concurrency conflict while updating enrollment {EnrollmentId}.",enrollment.EnrollmentId);
 
-            return RedirectToAction("Details", "Student", new { id = enrollment.StudentId });
+                ModelState.AddModelError(string.Empty,"This enrollment could not be updated because the record may have changed or been deleted. " +
+                    "Please reload the page before trying again.");
+
+                return View(model);
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError(ex,"Failed to update grades and absences " +"for enrollment {EnrollmentId}.",enrollment.EnrollmentId);
+
+                ModelState.AddModelError(string.Empty,"The grades and absences could not be saved. " +
+                    "Please try again. If the problem persists, contact the administrator.");
+
+                return View(model);
+            }
+
+            TempData["Message"] = "Grades and absences updated successfully.";
+
+            return RedirectToAction("Details","Student",new { id = enrollment.StudentId });
         }
 
         [HttpGet]
@@ -154,6 +200,11 @@ namespace SchoolManagementSystem.Controllers
 
             if (enrollment == null)
                 return NotFound();
+
+            var blockedResult = await CheckStudentCanBeModifiedAsync(enrollment.StudentId);
+
+            if (blockedResult != null)
+                return blockedResult;
 
             return View(enrollment);
         }
@@ -166,6 +217,11 @@ namespace SchoolManagementSystem.Controllers
 
             if (enrollment == null)
                 return NotFound();
+
+            var blockedResult = await CheckStudentCanBeModifiedAsync(enrollment.StudentId);
+
+            if (blockedResult != null)
+                return blockedResult;
 
             if (enrollment.FinalGrade != null)
             {
@@ -208,6 +264,22 @@ namespace SchoolManagementSystem.Controllers
                 Value = s.SubjectId.ToString(),
                 Text = s.Name
             });
+        }
+
+        private async Task<IActionResult?> CheckStudentCanBeModifiedAsync(int studentId)
+        {
+            var student = await _studentRepository
+                .GetByIdWithDetailsAsync(studentId);
+
+            if (student == null)
+                return NotFound();
+
+            if (!student.IsArchived)
+                return null;
+
+            TempData["Error"] = "This student is archived. Reactivate the student before changing enrollments, grades or absences.";
+
+            return RedirectToAction("Details","Student",new { id = student.StudentId });
         }
     }
 }
