@@ -19,6 +19,15 @@
     </p>
 </div>
 
+@if (Model.Student.IsArchived)
+{
+    <div class="alert alert-info" role="alert">
+        Your student record has been archived.
+        You can still consult your learning history,
+        including subjects, grades and recorded absences.
+    </div>
+}
+
 <section class="card shadow-sm mb-4">
     <div class="card-body p-4">
         <h2 class="h5 mb-3">
