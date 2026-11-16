@@ -24,5 +24,22 @@ namespace SchoolManagementSystem.Data.Repository
         public async Task<bool> NameExistsAsync(string name, int? excludeCourseId = null)
             => await _context.Courses.AnyAsync(c =>
                 c.Name == name && (excludeCourseId == null || c.CourseId != excludeCourseId));
+
+        public async Task<List<string>> GetEnrolledSubjectNamesAsync(int courseId,IEnumerable<int> subjectIds)
+        {
+            var ids = subjectIds.Distinct().ToList();
+
+            if (ids.Count == 0)
+                return new List<string>();
+
+            return await _context.Enrollments
+                .Where(enrollment =>
+                    enrollment.Student.ClassGroup.CourseId == courseId &&
+                    ids.Contains(enrollment.SubjectId))
+                .Select(enrollment => enrollment.Subject.Name)
+                .Distinct()
+                .OrderBy(name => name)
+                .ToListAsync();
+        }
     }
 }

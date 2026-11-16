@@ -7,5 +7,6 @@ namespace SchoolManagementSystem.Data.Interface
         Task<IEnumerable<Course>> GetAllWithDetailsAsync();
         Task<Course?> GetByIdWithDetailsAsync(int id);
         Task<bool> NameExistsAsync(string name, int? excludeCourseId = null);
+        Task<List<string>> GetEnrolledSubjectNamesAsync(int courseId,IEnumerable<int> subjectIds);
     }
 }

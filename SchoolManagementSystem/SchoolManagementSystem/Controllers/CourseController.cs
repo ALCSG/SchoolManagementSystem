@@ -114,8 +114,8 @@ namespace SchoolManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(CourseViewModel model)
         {
-            if (await _courseRepository.NameExistsAsync(model.Name, model.CourseId))
-                ModelState.AddModelError(nameof(model.Name), "A course with this name already exists");
+            if (await _courseRepository.NameExistsAsync(model.Name,model.CourseId))
+                ModelState.AddModelError(nameof(model.Name), "A course with this name already exists.");
 
             if (!ModelState.IsValid)
             {
@@ -123,19 +123,65 @@ namespace SchoolManagementSystem.Controllers
                 return View(model);
             }
 
-            var course = await _courseRepository.GetByIdWithDetailsAsync(model.CourseId);
+            var course = await _courseRepository
+                .GetByIdWithDetailsAsync(model.CourseId);
 
             if (course == null)
                 return NotFound();
 
-            course.Name = model.Name;
+            var selectedSubjectIds = model.SelectedSubjectIds
+                .Distinct()
+                .ToList();
 
-            var selectedSubjects = await _subjectRepository.GetByIdsAsync(model.SelectedSubjectIds);
+            var removedSubjectIds = course.Subjects
+                .Select(subject => subject.SubjectId)
+                .Except(selectedSubjectIds)
+                .ToList();
+
+            var enrolledSubjectNames = await _courseRepository
+                .GetEnrolledSubjectNamesAsync(course.CourseId,removedSubjectIds);
+
+            if (enrolledSubjectNames.Count > 0)
+            {
+                ModelState.AddModelError(
+                    string.Empty,
+                    "The following subjects cannot be removed because students in this course still have enrollments in them: " +
+                    $"{string.Join(", ", enrolledSubjectNames)}. " +
+                    "Please coordinate with the employee responsible for the student records.");
+            }
+
+            var selectedSubjects = await _subjectRepository
+                .GetByIdsAsync(selectedSubjectIds);
+
+            if (selectedSubjects.Count() != selectedSubjectIds.Count)
+                ModelState.AddModelError(string.Empty,"One or more selected subjects no longer exist. Please review your selection.");
+
+            if (!ModelState.IsValid)
+            {
+                model.Subjects = await GetSubjectsSelectListAsync();
+                return View(model);
+            }
+
+            course.Name = model.Name;
             course.Subjects.Clear();
+
             foreach (var subject in selectedSubjects)
                 course.Subjects.Add(subject);
 
-            await _courseRepository.SaveChangesAsync();
+            try
+            {
+                await _courseRepository.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                ModelState.AddModelError(string.Empty,"The course could not be updated. Please reload the page and try again.");
+
+                model.Subjects = await GetSubjectsSelectListAsync();
+
+                return View(model);
+            }
+
+            TempData["Message"] = "Course updated successfully.";
 
             return RedirectToAction(nameof(Index));
         }
