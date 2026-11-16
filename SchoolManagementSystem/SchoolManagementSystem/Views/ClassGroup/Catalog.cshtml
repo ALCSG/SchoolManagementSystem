@@ -45,6 +45,15 @@ else
                            class="text-decoration-none">
                             @group.Course.Name
                         </a>
+
+                        <div class="mt-3">
+                            <a asp-controller="ClassGroup"
+                               asp-action="PublicDetails"
+                               asp-route-id="@group.ClassGroupId"
+                               class="btn btn-outline-primary">
+                                View details
+                            </a>
+                        </div>
                     </div>
                 </section>
             </div>
