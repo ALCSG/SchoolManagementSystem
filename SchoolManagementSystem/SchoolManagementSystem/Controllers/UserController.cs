@@ -244,6 +244,117 @@ namespace SchoolManagementSystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Edit(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return NotFound();
+
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+                return NotFound();
+
+            if (await HasLinkedStudentAsync(user.Id))
+            {
+                TempData["Error"] = "This account is linked to a student. Student account details cannot be edited here.";
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            var model = new EditUserViewModel
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email ?? string.Empty
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(string id,EditUserViewModel model)
+        {
+            if (id != model.Id)
+                return BadRequest();
+
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+                return NotFound();
+
+            if (await HasLinkedStudentAsync(user.Id))
+            {
+                TempData["Error"] = "This account is linked to a student. Student account details cannot be edited here.";
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var email = model.Email.Trim();
+
+            var existingUser = await _userManager.FindByEmailAsync(email);
+
+            if (existingUser != null && existingUser.Id != user.Id)
+            {
+                ModelState.AddModelError(nameof(model.Email), "This email is already associated with another account.");
+
+                return View(model);
+            }
+
+            try
+            {
+                await using var transaction = await _context.Database.BeginTransactionAsync();
+
+                var emailChanged = !string.Equals(user.Email,email,StringComparison.OrdinalIgnoreCase);
+
+                user.FirstName = model.FirstName.Trim();
+                user.LastName = model.LastName.Trim();
+
+                user.Email = email;
+                user.UserName = email;
+
+                if (emailChanged)
+                    user.EmailConfirmed = false;
+
+                var result = await _userManager.UpdateAsync(user);
+
+                if (!result.Succeeded)
+                {
+                    AddIdentityErrors(result);
+                    return View(model);
+                }
+
+                if (emailChanged)
+                {
+                    var stampResult = await _userManager.UpdateSecurityStampAsync(user);
+
+                    if (!stampResult.Succeeded)
+                    {
+                        AddIdentityErrors(stampResult);
+                        return View(model);
+                    }
+                }
+
+                await transaction.CommitAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError(ex,"Database failure while updating user {UserId}.",user.Id);
+
+                ModelState.AddModelError(string.Empty,"The user account could not be updated. Please try again.");
+
+                return View(model);
+            }
+
+            TempData["Message"] = "User account updated successfully.";
+
+            return RedirectToAction(nameof(Index));
+        }
         private IEnumerable<SelectListItem> GetRolesSelectList()
         {
             return AppRoles.All
