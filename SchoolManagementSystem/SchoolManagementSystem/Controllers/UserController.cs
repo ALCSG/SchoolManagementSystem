@@ -355,6 +355,91 @@ namespace SchoolManagementSystem.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return NotFound();
+
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+                return NotFound();
+
+            var blockedReason = await GetDeleteBlockReasonAsync(user);
+
+            if (blockedReason != null)
+            {
+                TempData["Error"] = blockedReason;
+                return RedirectToAction(nameof(Index));
+            }
+
+            var model = new UserListViewModel
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Roles = await _userManager.GetRolesAsync(user)
+            };
+
+            return View(model);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return NotFound();
+
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+                return NotFound();
+
+            var blockedReason = await GetDeleteBlockReasonAsync(user);
+
+            if (blockedReason != null)
+            {
+                TempData["Error"] = blockedReason;
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                var result = await _userManager.DeleteAsync(user);
+
+                if (!result.Succeeded)
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        _logger.LogWarning("Failed to delete user {UserId}. Identity error {ErrorCode}: {ErrorDescription}",
+                            user.Id,
+                            error.Code,
+                            error.Description);
+                    }
+
+                    TempData["Error"] = "The user account could not be deleted. Reload the page and try again.";
+
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError(ex, "Database failure while deleting user {UserId}.", user.Id);
+
+                TempData["Error"] = "The user account could not be deleted. It may still be referenced by other records.";
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            TempData["Message"] = "User account deleted successfully.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
         private IEnumerable<SelectListItem> GetRolesSelectList()
         {
             return AppRoles.All
@@ -370,8 +455,7 @@ namespace SchoolManagementSystem.Controllers
         {
             model.Roles = GetRolesSelectList();
 
-            var students = await _studentRepository
-                .GetStudentsWithoutAccountAsync();
+            var students = await _studentRepository.GetStudentsWithoutAccountAsync();
 
             model.PendingStudents = students.Select(student =>
                 new PendingStudentViewModel
@@ -382,6 +466,37 @@ namespace SchoolManagementSystem.Controllers
                     Email = student.Email
                 })
                 .ToList();
+        }
+
+        private async Task<bool> HasLinkedStudentAsync(string userId)
+        {
+            return await _context.Set<Student>().AnyAsync(student => student.AppUserId == userId);
+        }
+
+        private async Task<string?> GetDeleteBlockReasonAsync(AppUser user)
+        {
+            if (_userManager.GetUserId(User) == user.Id)
+                return "You cannot delete your own account.";
+
+            if (await _userManager.IsInRoleAsync(user, AppRoles.Admin))
+            {
+                return "Administrator accounts cannot be deleted here.";
+            }
+
+            if (await HasLinkedStudentAsync(user.Id))
+            {
+                return "This account is linked to a student and cannot be deleted. Archiving a student is a separate operation.";
+            }
+
+            return null;
+        }
+
+        private void AddIdentityErrors(IdentityResult result)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty,error.Description);
+            }
         }
     }
 }
