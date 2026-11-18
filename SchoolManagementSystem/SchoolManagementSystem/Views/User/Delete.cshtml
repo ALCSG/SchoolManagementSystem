@@ -1,0 +1,40 @@
+﻿@model SchoolManagementSystem.Models.UserListViewModel
+
+@{
+    ViewData["Title"] = "Delete user";
+}
+
+<h1>Delete user</h1>
+
+<div class="alert alert-warning">
+    This action permanently deletes the user account.
+    It does not archive a student.
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Name</dt>
+    <dd class="col-sm-9">
+        @Model.FirstName @Model.LastName
+    </dd>
+
+    <dt class="col-sm-3">Email</dt>
+    <dd class="col-sm-9">@Model.Email</dd>
+
+    <dt class="col-sm-3">Roles</dt>
+    <dd class="col-sm-9">
+        @string.Join(", ", Model.Roles)
+    </dd>
+</dl>
+
+<form asp-action="Delete"
+      asp-route-id="@Model.Id"
+      method="post">
+
+    <button type="submit" class="btn btn-danger">
+        Delete account
+    </button>
+
+    <a asp-action="Index" class="btn btn-secondary">
+        Cancel
+    </a>
+</form>
