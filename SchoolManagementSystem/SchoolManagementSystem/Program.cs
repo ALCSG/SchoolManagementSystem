@@ -150,7 +150,12 @@ namespace SchoolManagementSystem
                 app.UseHsts();
             }
 
-            app.UseStatusCodePagesWithReExecute("/Error/{0}");
+            app.UseWhen(
+                context => !context.Request.Path.StartsWithSegments("/api"),
+                branch =>
+                {
+                    branch.UseStatusCodePagesWithReExecute("/Error/{0}");
+                });
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
