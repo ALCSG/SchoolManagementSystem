@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="SchoolManagementSystem.Mobile/SchoolManagementSystem.Mobile.csproj" Id="a507aeb3-a24a-426d-b515-c26abfcade85" />
   <Project Path="SchoolManagementSystem/SchoolManagementSystem.csproj" />
 </Solution>
