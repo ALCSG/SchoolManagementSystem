@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using SchoolManagementSystem.Data.Entities;
 using SchoolManagementSystem.Helpers;
 using SchoolManagementSystem.Models;
@@ -174,7 +173,7 @@ namespace SchoolManagementSystem.Controllers
 
             var user = await _userManager.GetUserAsync(User);
 
-            if(user == null)
+            if (user == null)
                 return NotFound();
 
             var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
@@ -240,7 +239,7 @@ namespace SchoolManagementSystem.Controllers
         [AllowAnonymous]
         public IActionResult ResetPassword(string userId, string token)
         {
-            if (userId.IsNullOrEmpty() || token.IsNullOrEmpty())
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
                 return NotFound();
 
             var model = new ResetPasswordViewModel

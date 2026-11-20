@@ -5,6 +5,9 @@ using SchoolManagementSystem.Data.Entities;
 using SchoolManagementSystem.Data.Interface;
 using SchoolManagementSystem.Data.Repository;
 using SchoolManagementSystem.Helpers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace SchoolManagementSystem
 {
@@ -28,6 +31,62 @@ namespace SchoolManagementSystem
             })
             .AddEntityFrameworkStores<DataContext>()
             .AddDefaultTokenProviders();
+
+            var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+            var jwtAudience = builder.Configuration["Jwt:Audience"];
+            var jwtKey = builder.Configuration["Jwt:Key"];
+
+            if (string.IsNullOrWhiteSpace(jwtIssuer) ||
+                string.IsNullOrWhiteSpace(jwtAudience) ||
+                string.IsNullOrWhiteSpace(jwtKey))
+            {
+                throw new InvalidOperationException(
+                    "Jwt:Issuer, Jwt:Audience and Jwt:Key must be configured.");
+            }
+
+            if (Encoding.UTF8.GetByteCount(jwtKey) < 64)
+            {
+                throw new InvalidOperationException(
+                    "Jwt:Key must contain at least 64 UTF-8 bytes.");
+            }
+
+            builder.Services
+                .AddAuthentication()
+                .AddJwtBearer(
+                    JwtBearerDefaults.AuthenticationScheme,
+                    options =>
+                    {
+                        options.MapInboundClaims = false;
+
+                        options.TokenValidationParameters =
+                            new TokenValidationParameters
+                            {
+                                ValidateIssuer = true,
+                                ValidIssuer = jwtIssuer,
+
+                                ValidateAudience = true,
+                                ValidAudience = jwtAudience,
+
+                                ValidateLifetime = true,
+                                RequireExpirationTime = true,
+
+                                ValidateIssuerSigningKey = true,
+                                RequireSignedTokens = true,
+
+                                IssuerSigningKey = new SymmetricSecurityKey(
+                                    Encoding.UTF8.GetBytes(jwtKey)),
+
+                                ValidAlgorithms = new[]
+                                {
+                        SecurityAlgorithms.HmacSha256
+                                },
+
+                                NameClaimType = "name",
+                                RoleClaimType = "role",
+
+                                ClockSkew = TimeSpan.FromSeconds(30)
+                            };
+                    });
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
