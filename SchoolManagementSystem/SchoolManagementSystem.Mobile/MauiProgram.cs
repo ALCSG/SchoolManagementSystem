@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using SchoolManagementSystem.Mobile.Services;
 using SchoolManagementSystem.Mobile.Views;
+using System.Net.Http.Headers;
 
 namespace SchoolManagementSystem.Mobile
 {
@@ -20,14 +21,26 @@ namespace SchoolManagementSystem.Mobile
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
-            builder.Services.AddSingleton<HttpClient>(_ => new HttpClient
+            builder.Services.AddSingleton<HttpClient>(_ =>
+            {
+                var client = new HttpClient
                 {
-                    BaseAddress = new Uri("https://schoolmanagemtnsys107.runasp.net/"),Timeout = TimeSpan.FromSeconds(30)
-                });
+                    BaseAddress = new Uri("https://schoolmanagemtnsys107.runasp.net/"),
+                    Timeout = TimeSpan.FromSeconds(30)
+                };
+
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                        "Bearer",
+                        SecureStorage.Default.GetAsync(AuthService.AccessTokenKey).GetAwaiter().GetResult() ?? string.Empty);
+
+                return client;
+            });
 
             builder.Services.AddSingleton<AuthService>();
+            builder.Services.AddSingleton<StudentService>();
 
             builder.Services.AddTransient<LoginPage>();
+            builder.Services.AddTransient<MyLearningPage>();
 
             return builder.Build();
         }

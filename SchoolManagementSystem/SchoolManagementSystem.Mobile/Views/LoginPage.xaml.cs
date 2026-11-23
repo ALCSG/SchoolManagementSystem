@@ -7,12 +7,14 @@ namespace SchoolManagementSystem.Mobile.Views
     public partial class LoginPage : ContentPage
     {
         private readonly AuthService _authService;
+        private readonly StudentService _studentService;
         private bool _isBusy;
 
-        public LoginPage(AuthService authService)
+        public LoginPage(AuthService authService, StudentService studentService)
         {
             InitializeComponent();
             _authService = authService;
+            _studentService = studentService;
         }
 
         private void OnEmailCompleted(object? sender, EventArgs e)
@@ -47,11 +49,7 @@ namespace SchoolManagementSystem.Mobile.Views
 
                 PasswordEntry.Text = string.Empty;
 
-                // Temporary: replace with My Learning navigation next.
-                await DisplayAlertAsync(
-                    "Login successful",
-                    $"Welcome, {result.FullName}.",
-                    "OK");
+                await Navigation.PushAsync(new MyLearningPage(_studentService));
             }
             catch (HttpRequestException ex)
             {

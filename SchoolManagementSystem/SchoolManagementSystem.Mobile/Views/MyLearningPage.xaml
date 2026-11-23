@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="SchoolManagementSystem.Mobile.Views.MyLearningPage"
+    Title="My Learning">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+
+            <ActivityIndicator
+                x:Name="LoadingIndicator"
+                IsRunning="False"
+                IsVisible="False" />
+
+            <Label
+                x:Name="ErrorLabel"
+                TextColor="Red"
+                IsVisible="False" />
+
+            <VerticalStackLayout
+                x:Name="LearningLayout"
+                IsVisible="False"
+                Spacing="12">
+
+                <Label
+                    x:Name="FullNameLabel"
+                    FontSize="24"
+                    FontAttributes="Bold" />
+
+                <Label
+                    x:Name="CourseLabel"
+                    FontSize="18" />
+
+                <Label
+                    x:Name="ClassLabel"
+                    FontSize="18" />
+
+                <Label
+                    x:Name="ArchivedLabel"
+                    FontSize="14"
+                    TextColor="Orange" />
+
+                <Label
+                    Text="Subjects"
+                    FontSize="20"
+                    FontAttributes="Bold" />
+
+                <VerticalStackLayout
+                    x:Name="SubjectsLayout"
+                    Spacing="10" />
+
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
