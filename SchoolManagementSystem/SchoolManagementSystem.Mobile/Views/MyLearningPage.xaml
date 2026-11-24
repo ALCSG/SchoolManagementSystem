@@ -53,6 +53,11 @@
 
             </VerticalStackLayout>
 
+            <Button
+                x:Name="LogoutButton"
+                Text="Log out"
+                Clicked="OnLogoutClicked" />
+            
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

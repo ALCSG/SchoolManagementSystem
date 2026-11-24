@@ -49,7 +49,7 @@ namespace SchoolManagementSystem.Mobile.Views
 
                 PasswordEntry.Text = string.Empty;
 
-                await Navigation.PushAsync(new MyLearningPage(_studentService));
+                await Navigation.PushAsync(new MyLearningPage(_studentService, _authService));
             }
             catch (HttpRequestException ex)
             {

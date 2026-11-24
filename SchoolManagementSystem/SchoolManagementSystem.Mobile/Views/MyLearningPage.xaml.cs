@@ -6,11 +6,13 @@ namespace SchoolManagementSystem.Mobile.Views
     public partial class MyLearningPage : ContentPage
     {
         private readonly StudentService _studentService;
+        private readonly AuthService _authService;
 
-        public MyLearningPage(StudentService studentService)
+        public MyLearningPage(StudentService studentService,AuthService authService)
         {
             InitializeComponent();
             _studentService = studentService;
+            _authService = authService;
         }
 
         protected override async void OnAppearing()
@@ -75,6 +77,22 @@ namespace SchoolManagementSystem.Mobile.Views
                 LoadingIndicator.IsVisible = false;
                 LoadingIndicator.IsRunning = false;
             }
+        }
+
+        private async void OnLogoutClicked(object? sender,EventArgs e)
+        {
+            bool confirmed = await DisplayAlertAsync(
+                "Log out",
+                "Do you want to sign out?",
+                "Yes",
+                "No");
+
+            if (!confirmed)
+                return;
+
+            await _authService.LogoutAsync();
+
+            await Navigation.PopToRootAsync();
         }
     }
 }

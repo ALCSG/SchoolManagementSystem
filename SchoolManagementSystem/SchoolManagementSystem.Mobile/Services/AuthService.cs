@@ -66,5 +66,12 @@ namespace SchoolManagementSystem.Mobile.Services
 
             return result;
         }
+
+        public Task LogoutAsync()
+        {
+            SecureStorage.Default.Remove(AuthService.AccessTokenKey);
+
+            return Task.CompletedTask;
+        }
     }
 }
