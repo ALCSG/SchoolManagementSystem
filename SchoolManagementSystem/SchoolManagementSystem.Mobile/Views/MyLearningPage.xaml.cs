@@ -1,3 +1,4 @@
+using Microsoft.Maui.Controls.Shapes;
 using SchoolManagementSystem.Mobile.Models;
 using SchoolManagementSystem.Mobile.Services;
 
@@ -7,12 +8,14 @@ namespace SchoolManagementSystem.Mobile.Views
     {
         private readonly StudentService _studentService;
         private readonly AuthService _authService;
+        private readonly ProfileService _profileService;
 
-        public MyLearningPage(StudentService studentService,AuthService authService)
+        public MyLearningPage(StudentService studentService,AuthService authService, ProfileService profileService)
         {
             InitializeComponent();
             _studentService = studentService;
             _authService = authService;
+            _profileService = profileService;
         }
 
         protected override async void OnAppearing()
@@ -34,33 +37,120 @@ namespace SchoolManagementSystem.Mobile.Views
                 var learning = await _studentService.GetMyLearningAsync();
 
                 FullNameLabel.Text = learning.FullName;
-                CourseLabel.Text = $"Course: {learning.CourseName}";
-                ClassLabel.Text = $"Class: {learning.ClassGroupName}";
 
-                ArchivedLabel.Text = learning.IsArchived ? "This student record is archived." : string.Empty;
+                CourseLabel.Text =
+                    $"Course: {learning.CourseName ?? "Not assigned"}";
+
+                ClassLabel.Text =
+                    $"Class: {learning.ClassGroupName ?? "Not assigned"}";
+
+                ArchivedLabel.Text = "This student record is archived.";
+                ArchivedLabel.IsVisible = learning.IsArchived;
 
                 SubjectsLayout.Children.Clear();
 
                 if (learning.Subjects.Count == 0)
                 {
-                    SubjectsLayout.Children.Add(new Label
+                    SubjectsLayout.Children.Add(new Border
                     {
-                        Text = "You are not enrolled in any subjects yet."
+                        BackgroundColor = Colors.White,
+                        Stroke = new SolidColorBrush(
+                            Color.FromArgb("#e2e8f0")),
+                        StrokeThickness = 1,
+                        StrokeShape = new RoundRectangle
+                        {
+                            CornerRadius = new CornerRadius(12)
+                        },
+                        Padding = new Thickness(22),
+                        Content = new Label
+                        {
+                            Text = "You are not enrolled in any subjects yet.",
+                            FontSize = 14,
+                            TextColor = Color.FromArgb("#526579")
+                        }
                     });
                 }
                 else
                 {
                     foreach (var subject in learning.Subjects)
                     {
-                        var gradeText = subject.FinalGrade.HasValue ? subject.FinalGrade.Value.ToString("0.0") : "Not graded";
+                        var gradeText = subject.FinalGrade.HasValue
+                            ? subject.FinalGrade.Value.ToString("0.0")
+                            : "Not graded";
 
-                        SubjectsLayout.Children.Add(new Label
+                        var detailsGrid = new Grid
                         {
-                            Text =
-                                $"{subject.SubjectName}\n" +
-                                $"Hours: {subject.TotalHours} | " +
-                                $"Absences: {subject.AbsenceCount} | " +
-                                $"Final grade: {gradeText}"
+                            ColumnSpacing = 12,
+                            ColumnDefinitions =
+                    {
+                        new ColumnDefinition
+                        {
+                            Width = GridLength.Star
+                        },
+                        new ColumnDefinition
+                        {
+                            Width = GridLength.Star
+                        },
+                        new ColumnDefinition
+                        {
+                            Width = GridLength.Star
+                        }
+                    }
+                        };
+
+                        var hours = CreateSubjectDetail(
+                            "Hours",
+                            $"{subject.TotalHours}");
+
+                        var absences = CreateSubjectDetail(
+                            "Absences",
+                            $"{subject.AbsenceCount}");
+
+                        var grade = CreateSubjectDetail(
+                            "Final grade",
+                            gradeText);
+
+                        Grid.SetColumn(hours, 0);
+                        Grid.SetColumn(absences, 1);
+                        Grid.SetColumn(grade, 2);
+
+                        detailsGrid.Children.Add(hours);
+                        detailsGrid.Children.Add(absences);
+                        detailsGrid.Children.Add(grade);
+
+                        var content = new VerticalStackLayout
+                        {
+                            Spacing = 16,
+                            Children =
+                    {
+                        new Label
+                        {
+                            Text = subject.SubjectName,
+                            FontSize = 17,
+                            FontAttributes = FontAttributes.Bold,
+                            TextColor = Color.FromArgb("#163550")
+                        },
+                        new BoxView
+                        {
+                            HeightRequest = 1,
+                            Color = Color.FromArgb("#eaf0f6")
+                        },
+                        detailsGrid
+                    }
+                        };
+
+                        SubjectsLayout.Children.Add(new Border
+                        {
+                            BackgroundColor = Colors.White,
+                            Stroke = new SolidColorBrush(
+                                Color.FromArgb("#e2e8f0")),
+                            StrokeThickness = 1,
+                            StrokeShape = new RoundRectangle
+                            {
+                                CornerRadius = new CornerRadius(12)
+                            },
+                            Padding = new Thickness(20),
+                            Content = content
                         });
                     }
                 }
@@ -69,13 +159,20 @@ namespace SchoolManagementSystem.Mobile.Views
             }
             catch (UnauthorizedAccessException)
             {
-                await DisplayAlertAsync("Session expired","Please sign in again.","OK");
+                await DisplayAlertAsync(
+                    "Session expired",
+                    "Please sign in again.",
+                    "OK");
 
                 await Navigation.PopToRootAsync();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                ErrorLabel.Text = "Could not load your learning information.";
+                System.Diagnostics.Debug.WriteLine(ex);
+
+                ErrorLabel.Text =
+                    "Could not load your learning information.";
+
                 ErrorLabel.IsVisible = true;
             }
             finally
@@ -83,6 +180,11 @@ namespace SchoolManagementSystem.Mobile.Views
                 LoadingIndicator.IsVisible = false;
                 LoadingIndicator.IsRunning = false;
             }
+        }
+
+        private async void OnProfileClicked(object? sender,EventArgs e)
+        {
+            await Navigation.PushAsync(new ProfilePage(_profileService));
         }
 
         private async void OnLogoutClicked(object? sender,EventArgs e)
@@ -99,6 +201,30 @@ namespace SchoolManagementSystem.Mobile.Views
             await _authService.LogoutAsync();
 
             await Navigation.PopToRootAsync();
+        }
+
+        private static VerticalStackLayout CreateSubjectDetail(string title,string value)
+        {
+            return new VerticalStackLayout
+            {
+                Spacing = 5,
+                Children =
+        {
+            new Label
+            {
+                Text = title,
+                FontSize = 12,
+                TextColor = Color.FromArgb("#526579")
+            },
+            new Label
+            {
+                Text = value,
+                FontSize = 16,
+                FontAttributes = FontAttributes.Bold,
+                TextColor = Color.FromArgb("#163550")
+            }
+        }
+            };
         }
     }
 }

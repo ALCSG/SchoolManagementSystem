@@ -4,60 +4,175 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="SchoolManagementSystem.Mobile.Views.MyLearningPage"
-    Title="My Learning">
+    Title="My Learning"
+    BackgroundColor="#f3f7fb">
+
+    <ContentPage.Resources>
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="BackgroundColor" Value="#2c3e50" />
+            <Setter Property="TextColor" Value="White" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="HeightRequest" Value="46" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="Padding" Value="20,10" />
+        </Style>
+    </ContentPage.Resources>
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="16">
-
-            <ActivityIndicator
-                x:Name="LoadingIndicator"
-                IsRunning="False"
-                IsVisible="False" />
-
-            <Label
-                x:Name="ErrorLabel"
-                TextColor="Red"
-                IsVisible="False" />
+        <Grid Padding="20,24">
 
             <VerticalStackLayout
-                x:Name="LearningLayout"
-                IsVisible="False"
-                Spacing="12">
+                Spacing="20"
+                MaximumWidthRequest="960"
+                HorizontalOptions="Fill">
+
+                <Border
+                    Padding="24"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 16">
+
+                    <Border.Background>
+                        <LinearGradientBrush
+                            StartPoint="0,0"
+                            EndPoint="1,1">
+
+                            <GradientStop
+                                Color="#09233f"
+                                Offset="0" />
+
+                            <GradientStop
+                                Color="#0b5fa5"
+                                Offset="1" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label
+                            Text="STUDENT PORTAL"
+                            FontSize="12"
+                            CharacterSpacing="2"
+                            FontAttributes="Bold"
+                            TextColor="#dce6ef" />
+
+                        <Label
+                            Text="My Learning"
+                            FontSize="30"
+                            FontAttributes="Bold"
+                            TextColor="White" />
+
+                        <Label
+                            Text="Your course, subjects and academic progress."
+                            FontSize="14"
+                            TextColor="#eaf0f6" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <ActivityIndicator
+                    x:Name="LoadingIndicator"
+                    Color="#155b91"
+                    IsRunning="False"
+                    IsVisible="False" />
 
                 <Label
-                    x:Name="FullNameLabel"
-                    FontSize="24"
-                    FontAttributes="Bold" />
-
-                <Label
-                    x:Name="CourseLabel"
-                    FontSize="18" />
-
-                <Label
-                    x:Name="ClassLabel"
-                    FontSize="18" />
-
-                <Label
-                    x:Name="ArchivedLabel"
+                    x:Name="ErrorLabel"
+                    TextColor="#b42318"
                     FontSize="14"
-                    TextColor="Orange" />
-
-                <Label
-                    Text="Subjects"
-                    FontSize="20"
-                    FontAttributes="Bold" />
+                    IsVisible="False" />
 
                 <VerticalStackLayout
-                    x:Name="SubjectsLayout"
-                    Spacing="10" />
+                    x:Name="LearningLayout"
+                    IsVisible="False"
+                    Spacing="20">
+
+                    <Border
+                        Padding="22"
+                        BackgroundColor="White"
+                        Stroke="#e2e8f0"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 12">
+
+                        <VerticalStackLayout Spacing="10">
+                            <Label
+                                Text="STUDENT OVERVIEW"
+                                FontSize="11"
+                                CharacterSpacing="1.5"
+                                FontAttributes="Bold"
+                                TextColor="#155b91" />
+
+                            <Label
+                                x:Name="FullNameLabel"
+                                FontSize="24"
+                                FontAttributes="Bold"
+                                TextColor="#163550" />
+
+                            <Label
+                                x:Name="CourseLabel"
+                                FontSize="15"
+                                TextColor="#2c3e50" />
+
+                            <Label
+                                x:Name="ClassLabel"
+                                FontSize="15"
+                                TextColor="#2c3e50" />
+
+                            <Label
+                                x:Name="ArchivedLabel"
+                                FontSize="14"
+                                TextColor="#9a6700"
+                                IsVisible="False" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label
+                            Text="Your subjects"
+                            FontSize="22"
+                            FontAttributes="Bold"
+                            TextColor="#163550" />
+
+                        <Label
+                            Text="View teaching hours, absences and final grades."
+                            FontSize="14"
+                            TextColor="#526579" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout
+                        x:Name="SubjectsLayout"
+                        Spacing="12" />
+
+                </VerticalStackLayout>
+
+                <Grid
+                    ColumnDefinitions="*,*"
+                    ColumnSpacing="12"
+                    MaximumWidthRequest="400"
+                    HorizontalOptions="Fill"
+                    Margin="0,4,0,8">
+
+                    <Button
+                        x:Name="ProfileButton"
+                        Grid.Column="0"
+                        Text="My profile"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        Clicked="OnProfileClicked" />
+
+                    <Button
+                        x:Name="LogoutButton"
+                        Grid.Column="1"
+                        Text="Log out"
+                        BackgroundColor="White"
+                        TextColor="#2c3e50"
+                        BorderColor="#dce3eb"
+                        BorderWidth="1"
+                        CornerRadius="8"
+                        HeightRequest="46"
+                        FontSize="14"
+                        Padding="20,10"
+                        Clicked="OnLogoutClicked" />
+                </Grid>
 
             </VerticalStackLayout>
-
-            <Button
-                x:Name="LogoutButton"
-                Text="Log out"
-                Clicked="OnLogoutClicked" />
-            
-        </VerticalStackLayout>
+        </Grid>
     </ScrollView>
 </ContentPage>

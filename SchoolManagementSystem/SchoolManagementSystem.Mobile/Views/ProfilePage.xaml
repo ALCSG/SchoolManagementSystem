@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="SchoolManagementSystem.Mobile.Views.ProfilePage"
+    Title="My Profile"
+    BackgroundColor="#f3f7fb">
+
+    <ContentPage.Resources>
+
+        <Style x:Key="FieldLabelStyle" TargetType="Label">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="TextColor" Value="#163550" />
+        </Style>
+
+        <Style x:Key="ProfileEntryStyle" TargetType="Entry">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="TextColor" Value="#2c3e50" />
+            <Setter Property="PlaceholderColor" Value="#526579" />
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="MinimumHeightRequest" Value="46" />
+        </Style>
+
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="BackgroundColor" Value="#2c3e50" />
+            <Setter Property="TextColor" Value="White" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="HeightRequest" Value="46" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="Padding" Value="20,10" />
+        </Style>
+
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <Grid Padding="20,24">
+
+            <VerticalStackLayout
+                Spacing="20"
+                MaximumWidthRequest="720"
+                HorizontalOptions="Fill">
+
+                <!-- Header -->
+                <Border
+                    Padding="24"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 16">
+
+                    <Border.Background>
+                        <LinearGradientBrush
+                            StartPoint="0,0"
+                            EndPoint="1,1">
+
+                            <GradientStop
+                                Color="#09233f"
+                                Offset="0" />
+
+                            <GradientStop
+                                Color="#0b5fa5"
+                                Offset="1" />
+
+                        </LinearGradientBrush>
+                    </Border.Background>
+
+                    <VerticalStackLayout Spacing="8">
+
+                        <Label
+                            Text="STUDENT PORTAL"
+                            FontSize="12"
+                            CharacterSpacing="2"
+                            FontAttributes="Bold"
+                            TextColor="#dce6ef" />
+
+                        <Label
+                            Text="My Profile"
+                            FontSize="30"
+                            FontAttributes="Bold"
+                            TextColor="White" />
+
+                        <Label
+                            Text="Manage your contact details and profile photo."
+                            FontSize="14"
+                            TextColor="#eaf0f6" />
+
+                    </VerticalStackLayout>
+                </Border>
+
+                <ActivityIndicator
+                    x:Name="LoadingIndicator"
+                    Color="#155b91"
+                    IsRunning="False"
+                    IsVisible="False" />
+
+                <Label
+                    x:Name="ErrorLabel"
+                    TextColor="#b42318"
+                    FontSize="14"
+                    IsVisible="False" />
+
+                <VerticalStackLayout
+                    x:Name="ProfileLayout"
+                    IsVisible="False"
+                    Spacing="20">
+
+                    <!-- Profile photo -->
+                    <Border
+                        Padding="24"
+                        BackgroundColor="White"
+                        Stroke="#e2e8f0"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 12">
+
+                        <VerticalStackLayout Spacing="16">
+
+                            <Label
+                                Text="PROFILE PHOTO"
+                                FontSize="11"
+                                CharacterSpacing="1.5"
+                                FontAttributes="Bold"
+                                TextColor="#155b91" />
+
+                            <Border
+                                Padding="8"
+                                HeightRequest="176"
+                                WidthRequest="176"
+                                HorizontalOptions="Center"
+                                BackgroundColor="#f3f7fb"
+                                Stroke="#dce3eb"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 16">
+
+                                <Grid>
+
+                                    <Image
+                                        x:Name="ProfilePhoto"
+                                        Aspect="AspectFit"
+                                        IsVisible="False" />
+
+                                    <Label
+                                        x:Name="NoPhotoLabel"
+                                        Text="No profile photo"
+                                        FontSize="14"
+                                        TextColor="#526579"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center"
+                                        HorizontalTextAlignment="Center"
+                                        IsVisible="True" />
+
+                                </Grid>
+                            </Border>
+
+                            <Button
+                                x:Name="ChoosePhotoButton"
+                                Text="Choose photo"
+                                BackgroundColor="#eaf0f6"
+                                TextColor="#09233f"
+                                BorderColor="#dce3eb"
+                                BorderWidth="1"
+                                CornerRadius="8"
+                                HeightRequest="46"
+                                FontSize="14"
+                                FontAttributes="Bold"
+                                Padding="24,10"
+                                HorizontalOptions="Center"
+                                Clicked="OnChoosePhotoClicked" />
+
+                            <Label
+                                Text="JPG or PNG. Maximum size: 2 MB."
+                                FontSize="12"
+                                TextColor="#526579"
+                                HorizontalTextAlignment="Center" />
+
+                            <Label
+                                Text="Select a photo, then save your changes."
+                                FontSize="12"
+                                TextColor="#526579"
+                                HorizontalTextAlignment="Center" />
+
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Personal information -->
+                    <Border
+                        Padding="24"
+                        BackgroundColor="White"
+                        Stroke="#e2e8f0"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 12">
+
+                        <VerticalStackLayout Spacing="18">
+
+                            <VerticalStackLayout Spacing="6">
+
+                                <Label
+                                    Text="PERSONAL INFORMATION"
+                                    FontSize="11"
+                                    CharacterSpacing="1.5"
+                                    FontAttributes="Bold"
+                                    TextColor="#155b91" />
+
+                                <Label
+                                    Text="Your details"
+                                    FontSize="22"
+                                    FontAttributes="Bold"
+                                    TextColor="#163550" />
+
+                                <Label
+                                    Text="You can update your phone number below."
+                                    FontSize="14"
+                                    TextColor="#526579" />
+
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="6">
+
+                                <Label
+                                    Text="Full name"
+                                    Style="{StaticResource FieldLabelStyle}" />
+
+                                <Border
+                                    Padding="10,0"
+                                    BackgroundColor="#f3f7fb"
+                                    Stroke="#e2e8f0"
+                                    StrokeShape="RoundRectangle 8">
+
+                                    <Entry
+                                        x:Name="FullNameEntry"
+                                        Style="{StaticResource ProfileEntryStyle}"
+                                        IsReadOnly="True" />
+
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="6">
+
+                                <Label
+                                    Text="Email"
+                                    Style="{StaticResource FieldLabelStyle}" />
+
+                                <Border
+                                    Padding="10,0"
+                                    BackgroundColor="#f3f7fb"
+                                    Stroke="#e2e8f0"
+                                    StrokeShape="RoundRectangle 8">
+
+                                    <Entry
+                                        x:Name="EmailEntry"
+                                        Style="{StaticResource ProfileEntryStyle}"
+                                        IsReadOnly="True" />
+
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="6">
+
+                                <Label
+                                    Text="Phone number"
+                                    Style="{StaticResource FieldLabelStyle}" />
+
+                                <Border
+                                    Padding="10,0"
+                                    BackgroundColor="White"
+                                    Stroke="#dce3eb"
+                                    StrokeShape="RoundRectangle 8">
+
+                                    <Entry
+                                        x:Name="PhoneNumberEntry"
+                                        Style="{StaticResource ProfileEntryStyle}"
+                                        Placeholder="Enter your phone number"
+                                        Keyboard="Telephone"
+                                        MaxLength="30" />
+
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <Label
+                                Text="Your name and email cannot be changed here."
+                                FontSize="12"
+                                TextColor="#526579" />
+
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Button
+                        x:Name="SaveButton"
+                        Text="Save changes"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        HorizontalOptions="Fill"
+                        MaximumWidthRequest="320"
+                        Margin="0,0,0,12"
+                        Clicked="OnSaveClicked" />
+
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </Grid>
+    </ScrollView>
+</ContentPage>

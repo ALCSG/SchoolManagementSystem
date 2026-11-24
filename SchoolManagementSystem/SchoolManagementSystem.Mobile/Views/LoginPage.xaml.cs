@@ -8,13 +8,15 @@ namespace SchoolManagementSystem.Mobile.Views
     {
         private readonly AuthService _authService;
         private readonly StudentService _studentService;
+        private readonly ProfileService _profileService;
         private bool _isBusy;
 
-        public LoginPage(AuthService authService, StudentService studentService)
+        public LoginPage(AuthService authService, StudentService studentService, ProfileService profileService)
         {
             InitializeComponent();
             _authService = authService;
             _studentService = studentService;
+            _profileService = profileService;
         }
 
         private void OnEmailCompleted(object? sender, EventArgs e)
@@ -49,7 +51,7 @@ namespace SchoolManagementSystem.Mobile.Views
 
                 PasswordEntry.Text = string.Empty;
 
-                await Navigation.PushAsync(new MyLearningPage(_studentService, _authService));
+                await Navigation.PushAsync(new MyLearningPage(_studentService, _authService, _profileService));
             }
             catch (HttpRequestException ex)
             {

@@ -4,64 +4,215 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="SchoolManagementSystem.Mobile.Views.LoginPage"
-    Title="Login">
+    Title="Login"
+    BackgroundColor="#f3f7fb">
+
+    <ContentPage.Resources>
+
+        <Style x:Key="FieldLabelStyle" TargetType="Label">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="TextColor" Value="#163550" />
+        </Style>
+
+        <Style x:Key="LoginEntryStyle" TargetType="Entry">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="TextColor" Value="#2c3e50" />
+            <Setter Property="PlaceholderColor" Value="#526579" />
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="MinimumHeightRequest" Value="48" />
+        </Style>
+
+    </ContentPage.Resources>
 
     <ScrollView>
-        <VerticalStackLayout
-            Padding="24"
-            Spacing="18"
-            MaximumWidthRequest="440"
-            HorizontalOptions="Fill"
-            VerticalOptions="Center">
+        <Grid
+            Padding="24,32"
+            RowDefinitions="*">
 
-            <Label
-                Text="School Management"
-                FontSize="28"
-                FontAttributes="Bold"
-                HorizontalTextAlignment="Center" />
+            <VerticalStackLayout
+                Spacing="24"
+                MaximumWidthRequest="460"
+                HorizontalOptions="Fill"
+                VerticalOptions="Center">
 
-            <Label
-                Text="Sign in to view your learning history."
-                HorizontalTextAlignment="Center" />
+                <VerticalStackLayout Spacing="14">
 
-            <VerticalStackLayout Spacing="6">
-                <Label Text="Email" />
+                    <Border
+                        Padding="16"
+                        WidthRequest="140"
+                        HeightRequest="140"
+                        HorizontalOptions="Center"
+                        BackgroundColor="White"
+                        Stroke="#e2e8f0"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 24">
 
-                <Entry
-                    x:Name="EmailEntry"
-                    Placeholder="Enter your email"
-                    Keyboard="Email"
-                    ReturnType="Next"
-                    Completed="OnEmailCompleted" />
+                        <Image
+                            Source="mobile_logo.png"
+                            Aspect="AspectFit"
+                            SemanticProperties.Description="School Management System logo" />
+
+                    </Border>
+
+                    <Label
+                        Text="School Management System"
+                        FontSize="26"
+                        FontAttributes="Bold"
+                        TextColor="#09233f"
+                        HorizontalTextAlignment="Center" />
+
+                    <Label
+                        Text="Connecting you to your school."
+                        FontSize="14"
+                        TextColor="#526579"
+                        HorizontalTextAlignment="Center" />
+
+                </VerticalStackLayout>
+
+                <Border
+                    Padding="0"
+                    BackgroundColor="White"
+                    Stroke="#e2e8f0"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 16">
+
+                    <VerticalStackLayout Spacing="0">
+
+                        <Border
+                            Padding="24"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 16,16,0,0">
+
+                            <Border.Background>
+                                <LinearGradientBrush
+                                    StartPoint="0,0"
+                                    EndPoint="1,1">
+
+                                    <GradientStop
+                                        Color="#09233f"
+                                        Offset="0" />
+
+                                    <GradientStop
+                                        Color="#0b5fa5"
+                                        Offset="1" />
+
+                                </LinearGradientBrush>
+                            </Border.Background>
+
+                            <VerticalStackLayout Spacing="8">
+
+                                <Label
+                                    Text="STUDENT PORTAL"
+                                    FontSize="11"
+                                    CharacterSpacing="1.5"
+                                    FontAttributes="Bold"
+                                    TextColor="#dce6ef" />
+
+                                <Label
+                                    Text="Welcome back"
+                                    FontSize="25"
+                                    FontAttributes="Bold"
+                                    TextColor="White" />
+
+                                <Label
+                                    Text="Sign in to view your learning information."
+                                    FontSize="14"
+                                    TextColor="#eaf0f6" />
+
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Form -->
+                        <VerticalStackLayout
+                            Padding="24"
+                            Spacing="20">
+
+                            <VerticalStackLayout Spacing="7">
+
+                                <Label
+                                    Text="Email"
+                                    Style="{StaticResource FieldLabelStyle}" />
+
+                                <Border
+                                    Padding="10,0"
+                                    BackgroundColor="White"
+                                    Stroke="#dce3eb"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 8">
+
+                                    <Entry
+                                        x:Name="EmailEntry"
+                                        Style="{StaticResource LoginEntryStyle}"
+                                        Placeholder="Enter your email"
+                                        Keyboard="Email"
+                                        IsTextPredictionEnabled="False"
+                                        ReturnType="Next"
+                                        Completed="OnEmailCompleted" />
+
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="7">
+
+                                <Label
+                                    Text="Password"
+                                    Style="{StaticResource FieldLabelStyle}" />
+
+                                <Border
+                                    Padding="10,0"
+                                    BackgroundColor="White"
+                                    Stroke="#dce3eb"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 8">
+
+                                    <Entry
+                                        x:Name="PasswordEntry"
+                                        Style="{StaticResource LoginEntryStyle}"
+                                        Placeholder="Enter your password"
+                                        IsPassword="True"
+                                        IsTextPredictionEnabled="False"
+                                        ReturnType="Go"
+                                        Completed="OnLoginClicked" />
+
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <Label
+                                x:Name="ErrorLabel"
+                                FontSize="13"
+                                TextColor="#b42318"
+                                IsVisible="False"
+                                SemanticProperties.Description="Login error" />
+
+                            <ActivityIndicator
+                                x:Name="LoadingIndicator"
+                                Color="#155b91"
+                                IsRunning="False"
+                                IsVisible="False" />
+
+                            <Button
+                                x:Name="LoginButton"
+                                Text="Sign in"
+                                BackgroundColor="#2c3e50"
+                                TextColor="White"
+                                CornerRadius="8"
+                                HeightRequest="48"
+                                FontSize="15"
+                                FontAttributes="Bold"
+                                Clicked="OnLoginClicked" />
+
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Label
+                    Text="Your learning, in one place."
+                    FontSize="12"
+                    TextColor="#526579"
+                    HorizontalTextAlignment="Center" />
+
             </VerticalStackLayout>
-
-            <VerticalStackLayout Spacing="6">
-                <Label Text="Password" />
-
-                <Entry
-                    x:Name="PasswordEntry"
-                    Placeholder="Enter your password"
-                    IsPassword="True"
-                    ReturnType="Go"
-                    Completed="OnLoginClicked" />
-            </VerticalStackLayout>
-
-            <Label
-                x:Name="ErrorLabel"
-                TextColor="Red"
-                IsVisible="False"
-                SemanticProperties.Description="Login error" />
-
-            <ActivityIndicator
-                x:Name="LoadingIndicator"
-                IsRunning="False"
-                IsVisible="False" />
-
-            <Button
-                x:Name="LoginButton"
-                Text="Sign in"
-                Clicked="OnLoginClicked" />
-
-        </VerticalStackLayout>
+        </Grid>
     </ScrollView>
 </ContentPage>

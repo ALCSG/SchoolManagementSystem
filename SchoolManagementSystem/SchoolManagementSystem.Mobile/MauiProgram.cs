@@ -38,9 +38,11 @@ namespace SchoolManagementSystem.Mobile
 
             builder.Services.AddSingleton<AuthService>();
             builder.Services.AddSingleton<StudentService>();
+            builder.Services.AddSingleton<ProfileService>();
 
             builder.Services.AddTransient<LoginPage>();
             builder.Services.AddTransient<MyLearningPage>();
+            builder.Services.AddTransient<ProfilePage>();
 
             return builder.Build();
         }
