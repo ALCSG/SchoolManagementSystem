@@ -35,7 +35,7 @@ namespace SchoolManagementSystem.Mobile.Views
 
                 FullNameLabel.Text = learning.FullName;
                 CourseLabel.Text = $"Course: {learning.CourseName}";
-                ClassLabel.Text = $"Class: {learning.ClassName}";
+                ClassLabel.Text = $"Class: {learning.ClassGroupName}";
 
                 ArchivedLabel.Text = learning.IsArchived ? "This student record is archived." : string.Empty;
 
@@ -52,9 +52,15 @@ namespace SchoolManagementSystem.Mobile.Views
                 {
                     foreach (var subject in learning.Subjects)
                     {
+                        var gradeText = subject.FinalGrade.HasValue ? subject.FinalGrade.Value.ToString("0.0") : "Not graded";
+
                         SubjectsLayout.Children.Add(new Label
                         {
-                            Text = subject.SubjectName
+                            Text =
+                                $"{subject.SubjectName}\n" +
+                                $"Hours: {subject.TotalHours} | " +
+                                $"Absences: {subject.AbsenceCount} | " +
+                                $"Final grade: {gradeText}"
                         });
                     }
                 }

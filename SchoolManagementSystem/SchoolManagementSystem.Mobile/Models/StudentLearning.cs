@@ -8,7 +8,7 @@ namespace SchoolManagementSystem.Mobile.Models
     {
         public string FullName { get; set; } = string.Empty;
         public string CourseName { get; set; } = string.Empty;
-        public string ClassName { get; set; } = string.Empty;
+        public string ClassGroupName { get; set; } = string.Empty;
         public bool IsArchived { get; set; }
         public decimal MaxAbsencePercentage { get; set; }
         public List<StudentSubject> Subjects { get; set; } = [];

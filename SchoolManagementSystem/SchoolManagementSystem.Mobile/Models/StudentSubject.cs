@@ -6,9 +6,14 @@ namespace SchoolManagementSystem.Mobile.Models
 {
     public class StudentSubject
     {
-        public int SubjectId { get; set; }
+        public int EnrollmentId { get; set; }
+
         public string SubjectName { get; set; } = string.Empty;
-        public decimal CurrentABsencePercentage { get; set; }
-        public bool IsArchived { get; set; }
+
+        public int TotalHours { get; set; }
+
+        public int AbsenceCount { get; set; }
+
+        public decimal? FinalGrade { get; set; }
     }
 }
