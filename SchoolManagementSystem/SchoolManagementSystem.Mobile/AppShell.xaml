@@ -1,14 +1,129 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
+
 <Shell
     x:Class="SchoolManagementSystem.Mobile.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:SchoolManagementSystem.Mobile"
-    Title="SchoolManagementSystem.Mobile">
+    Title="School Management System"
+    FlyoutBehavior="Flyout"
+    FlyoutBackgroundColor="#f3f7fb"
+    FlyoutHeaderBehavior="Fixed"
+    Shell.BackgroundColor="#f3f7fb"
+Shell.ForegroundColor="#163550"
+Shell.TitleColor="#163550"
+Shell.UnselectedColor="#526579"
+    Shell.TabBarIsVisible="False">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <Shell.ItemTemplate>
+        <DataTemplate>
+            <Grid
+            Padding="24,0"
+            HeightRequest="54"
+            ColumnDefinitions="*">
+
+                <Label
+                Text="{Binding Title}"
+                FontSize="15"
+                FontAttributes="Bold"
+                TextColor="#163550"
+                VerticalOptions="Center" />
+
+            </Grid>
+        </DataTemplate>
+    </Shell.ItemTemplate>
+
+    <Shell.MenuItemTemplate>
+        <DataTemplate>
+            <Grid
+            Padding="24,0"
+            HeightRequest="54"
+            ColumnDefinitions="*">
+
+                <Label
+                Text="{Binding Text}"
+                FontSize="15"
+                TextColor="#b42318"
+                VerticalOptions="Center" />
+
+            </Grid>
+        </DataTemplate>
+    </Shell.MenuItemTemplate>
+    <Shell.FlyoutHeader>
+        <Grid
+            Padding="24,32,24,24"
+            RowDefinitions="Auto,Auto,Auto"
+            RowSpacing="12"
+            BackgroundColor="#09233f">
+
+            <Image
+                Grid.Row="0"
+                Source="mobile_logo.png"
+                HeightRequest="100"
+                WidthRequest="100"
+                Aspect="AspectFit"
+                HorizontalOptions="Start" />
+
+            <Label
+                Grid.Row="1"
+                Text="School Management System"
+                FontSize="20"
+                FontAttributes="Bold"
+                TextColor="White" />
+
+            <Label
+                Grid.Row="2"
+                Text="STUDENT PORTAL"
+                FontSize="11"
+                CharacterSpacing="2"
+                TextColor="#dce6ef" />
+
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <FlyoutItem
+        Title="My Learning"
+        Route="learning">
+
+        <ShellContent
+            x:Name="LearningContent"
+            Title="My Learning"
+            Route="learningPage" />
+
+    </FlyoutItem>
+
+    <FlyoutItem
+        Title="My Profile"
+        Route="profile">
+
+        <ShellContent
+            x:Name="ProfileContent"
+            Title="My Profile"
+            Route="profilePage" />
+
+    </FlyoutItem>
+
+    <FlyoutItem
+        Title="About"
+        Route="about">
+
+        <ShellContent
+            x:Name="AboutContent"
+            Title="About"
+            Route="aboutPage" />
+
+    </FlyoutItem>
+
+    <MenuItem
+        Text="Log out"
+        Clicked="OnLogoutClicked" />
+
+    <Shell.FlyoutFooter>
+        <VerticalStackLayout Padding="24,16">
+            <Label
+                Text="School Management System"
+                FontSize="12"
+                TextColor="#526579" />
+        </VerticalStackLayout>
+    </Shell.FlyoutFooter>
 
 </Shell>

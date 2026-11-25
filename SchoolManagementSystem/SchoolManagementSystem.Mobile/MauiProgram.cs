@@ -23,17 +23,12 @@ namespace SchoolManagementSystem.Mobile
 #endif
             builder.Services.AddSingleton<HttpClient>(_ =>
             {
-                var client = new HttpClient
+                return new HttpClient
                 {
                     BaseAddress = new Uri("https://schoolmanagemtnsys107.runasp.net/"),
+
                     Timeout = TimeSpan.FromSeconds(30)
                 };
-
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
-                        "Bearer",
-                        SecureStorage.Default.GetAsync(AuthService.AccessTokenKey).GetAwaiter().GetResult() ?? string.Empty);
-
-                return client;
             });
 
             builder.Services.AddSingleton<AuthService>();
@@ -43,6 +38,9 @@ namespace SchoolManagementSystem.Mobile
             builder.Services.AddTransient<LoginPage>();
             builder.Services.AddTransient<MyLearningPage>();
             builder.Services.AddTransient<ProfilePage>();
+            builder.Services.AddTransient<AboutPage>();
+
+            builder.Services.AddTransient<AppShell>();
 
             return builder.Build();
         }

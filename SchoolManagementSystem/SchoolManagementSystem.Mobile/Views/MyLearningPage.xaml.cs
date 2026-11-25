@@ -7,15 +7,11 @@ namespace SchoolManagementSystem.Mobile.Views
     public partial class MyLearningPage : ContentPage
     {
         private readonly StudentService _studentService;
-        private readonly AuthService _authService;
-        private readonly ProfileService _profileService;
 
-        public MyLearningPage(StudentService studentService,AuthService authService, ProfileService profileService)
+        public MyLearningPage(StudentService studentService)
         {
             InitializeComponent();
             _studentService = studentService;
-            _authService = authService;
-            _profileService = profileService;
         }
 
         protected override async void OnAppearing()
@@ -159,12 +155,18 @@ namespace SchoolManagementSystem.Mobile.Views
             }
             catch (UnauthorizedAccessException)
             {
+                var window = Window;
+
                 await DisplayAlertAsync(
                     "Session expired",
                     "Please sign in again.",
                     "OK");
 
-                await Navigation.PopToRootAsync();
+                if (Application.Current is App app &&
+                    window is not null)
+                {
+                    await app.SignOutAsync(window);
+                }
             }
             catch (Exception ex)
             {
@@ -182,48 +184,27 @@ namespace SchoolManagementSystem.Mobile.Views
             }
         }
 
-        private async void OnProfileClicked(object? sender,EventArgs e)
-        {
-            await Navigation.PushAsync(new ProfilePage(_profileService));
-        }
-
-        private async void OnLogoutClicked(object? sender,EventArgs e)
-        {
-            bool confirmed = await DisplayAlertAsync(
-                "Log out",
-                "Do you want to sign out?",
-                "Yes",
-                "No");
-
-            if (!confirmed)
-                return;
-
-            await _authService.LogoutAsync();
-
-            await Navigation.PopToRootAsync();
-        }
-
         private static VerticalStackLayout CreateSubjectDetail(string title,string value)
         {
             return new VerticalStackLayout
             {
                 Spacing = 5,
                 Children =
-        {
-            new Label
-            {
-                Text = title,
-                FontSize = 12,
-                TextColor = Color.FromArgb("#526579")
-            },
-            new Label
-            {
-                Text = value,
-                FontSize = 16,
-                FontAttributes = FontAttributes.Bold,
-                TextColor = Color.FromArgb("#163550")
-            }
-        }
+                {
+                    new Label
+                    {
+                    Text = title,
+                    FontSize = 12,
+                    TextColor = Color.FromArgb("#526579")
+                    },
+                    new Label
+                    {
+                    Text = value,
+                    FontSize = 16,
+                    FontAttributes = FontAttributes.Bold,
+                    TextColor = Color.FromArgb("#163550")
+                    }
+                }
             };
         }
     }

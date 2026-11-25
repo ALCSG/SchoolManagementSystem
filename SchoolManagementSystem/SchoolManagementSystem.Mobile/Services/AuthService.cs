@@ -1,6 +1,7 @@
-﻿using System.Net;
+﻿using SchoolManagementSystem.Mobile.Models;
+using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using SchoolManagementSystem.Mobile.Models;
 
 namespace SchoolManagementSystem.Mobile.Services
 {
@@ -60,16 +61,21 @@ namespace SchoolManagementSystem.Mobile.Services
                     "The server returned an invalid login response.");
             }
 
-            await SecureStorage.Default.SetAsync(
-                AccessTokenKey,
-                result.AccessToken);
+            await SecureStorage.Default.SetAsync(AccessTokenKey,result.AccessToken);
+
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    result.AccessToken);
 
             return result;
         }
 
         public Task LogoutAsync()
         {
-            SecureStorage.Default.Remove(AuthService.AccessTokenKey);
+            SecureStorage.Default.Remove(AccessTokenKey);
+
+            _httpClient.DefaultRequestHeaders.Authorization = null;
 
             return Task.CompletedTask;
         }

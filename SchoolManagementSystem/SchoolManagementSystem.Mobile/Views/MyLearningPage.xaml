@@ -143,35 +143,6 @@
 
                 </VerticalStackLayout>
 
-                <Grid
-                    ColumnDefinitions="*,*"
-                    ColumnSpacing="12"
-                    MaximumWidthRequest="400"
-                    HorizontalOptions="Fill"
-                    Margin="0,4,0,8">
-
-                    <Button
-                        x:Name="ProfileButton"
-                        Grid.Column="0"
-                        Text="My profile"
-                        Style="{StaticResource PrimaryButtonStyle}"
-                        Clicked="OnProfileClicked" />
-
-                    <Button
-                        x:Name="LogoutButton"
-                        Grid.Column="1"
-                        Text="Log out"
-                        BackgroundColor="White"
-                        TextColor="#2c3e50"
-                        BorderColor="#dce3eb"
-                        BorderWidth="1"
-                        CornerRadius="8"
-                        HeightRequest="46"
-                        FontSize="14"
-                        Padding="20,10"
-                        Clicked="OnLogoutClicked" />
-                </Grid>
-
             </VerticalStackLayout>
         </Grid>
     </ScrollView>

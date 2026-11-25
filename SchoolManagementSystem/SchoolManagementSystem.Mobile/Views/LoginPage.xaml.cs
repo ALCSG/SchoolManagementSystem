@@ -7,16 +7,12 @@ namespace SchoolManagementSystem.Mobile.Views
     public partial class LoginPage : ContentPage
     {
         private readonly AuthService _authService;
-        private readonly StudentService _studentService;
-        private readonly ProfileService _profileService;
         private bool _isBusy;
 
-        public LoginPage(AuthService authService, StudentService studentService, ProfileService profileService)
+        public LoginPage(AuthService authService)
         {
             InitializeComponent();
             _authService = authService;
-            _studentService = studentService;
-            _profileService = profileService;
         }
 
         private void OnEmailCompleted(object? sender, EventArgs e)
@@ -45,13 +41,16 @@ namespace SchoolManagementSystem.Mobile.Views
 
             try
             {
-                var result = await _authService.LoginAsync(
-                    email,
-                    password);
+                await _authService.LoginAsync(email,password);
 
                 PasswordEntry.Text = string.Empty;
 
-                await Navigation.PushAsync(new MyLearningPage(_studentService, _authService, _profileService));
+                if (Application.Current is not App app || Window is not Window window)
+                {
+                    throw new InvalidOperationException("Could not open the application.");
+                }
+
+                app.ShowMainArea(window);
             }
             catch (HttpRequestException ex)
             {

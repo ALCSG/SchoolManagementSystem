@@ -212,12 +212,18 @@ namespace SchoolManagementSystem.Mobile.Views
 
         private async Task HandleExpiredSessionAsync()
         {
+            var window = Window;
+
             await DisplayAlertAsync(
                 "Session expired",
                 "Please sign in again.",
                 "OK");
 
-            await Navigation.PopToRootAsync();
+            if (Application.Current is App app &&
+                window is not null)
+            {
+                await app.SignOutAsync(window);
+            }
         }
 
         private void ShowError(string message)
