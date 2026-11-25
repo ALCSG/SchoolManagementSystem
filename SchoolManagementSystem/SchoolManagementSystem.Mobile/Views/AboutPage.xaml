@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="SchoolManagementSystem.Mobile.Views.AboutPage"
+    Title="About"
+    BackgroundColor="#f3f7fb">
+
+    <ScrollView>
+        <Grid Padding="20,24">
+
+            <VerticalStackLayout
+                Spacing="20"
+                MaximumWidthRequest="720"
+                HorizontalOptions="Fill">
+
+                <!-- Header -->
+                <Border
+                    Padding="24"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 16">
+
+                    <Border.Background>
+                        <LinearGradientBrush
+                            StartPoint="0,0"
+                            EndPoint="1,1">
+
+                            <GradientStop
+                                Color="#09233f"
+                                Offset="0" />
+
+                            <GradientStop
+                                Color="#0b5fa5"
+                                Offset="1" />
+
+                        </LinearGradientBrush>
+                    </Border.Background>
+
+                    <VerticalStackLayout Spacing="8">
+
+                        <Label
+                            Text="STUDENT PORTAL"
+                            FontSize="12"
+                            CharacterSpacing="2"
+                            FontAttributes="Bold"
+                            TextColor="#dce6ef" />
+
+                        <Label
+                            Text="About"
+                            FontSize="30"
+                            FontAttributes="Bold"
+                            TextColor="White" />
+
+                        <Label
+                            Text="Connecting you to your school."
+                            FontSize="14"
+                            TextColor="#eaf0f6" />
+
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Application overview -->
+                <Border
+                    Padding="24"
+                    BackgroundColor="White"
+                    Stroke="#e2e8f0"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 12">
+
+                    <VerticalStackLayout Spacing="14">
+
+                        <Label
+                            Text="THE APPLICATION"
+                            FontSize="11"
+                            CharacterSpacing="1.5"
+                            FontAttributes="Bold"
+                            TextColor="#155b91" />
+
+                        <Label
+                            Text="School Management System"
+                            FontSize="24"
+                            FontAttributes="Bold"
+                            TextColor="#163550" />
+
+                        <Label
+                            Text="A student companion app for accessing learning information and managing personal contact details."
+                            FontSize="15"
+                            TextColor="#526579" />
+
+                        <Label
+                            Text="Connected to the School Management System web platform."
+                            FontSize="14"
+                            TextColor="#526579" />
+
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Features -->
+                <Border
+                    Padding="24"
+                    BackgroundColor="White"
+                    Stroke="#e2e8f0"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 12">
+
+                    <VerticalStackLayout Spacing="18">
+
+                        <Label
+                            Text="WHAT YOU CAN DO"
+                            FontSize="11"
+                            CharacterSpacing="1.5"
+                            FontAttributes="Bold"
+                            TextColor="#155b91" />
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label
+                                Text="My Learning"
+                                FontSize="18"
+                                FontAttributes="Bold"
+                                TextColor="#163550" />
+
+                            <Label
+                                Text="View your course, class, subjects, teaching hours, absences and final grades."
+                                FontSize="14"
+                                TextColor="#526579" />
+                        </VerticalStackLayout>
+
+                        <BoxView
+                            HeightRequest="1"
+                            Color="#eaf0f6" />
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label
+                                Text="My Profile"
+                                FontSize="18"
+                                FontAttributes="Bold"
+                                TextColor="#163550" />
+
+                            <Label
+                                Text="View your personal information and update your phone number and profile photo."
+                                FontSize="14"
+                                TextColor="#526579" />
+                        </VerticalStackLayout>
+
+                        <BoxView
+                            HeightRequest="1"
+                            Color="#eaf0f6" />
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label
+                                Text="Web Platform"
+                                FontSize="18"
+                                FontAttributes="Bold"
+                                TextColor="#163550" />
+
+                            <Label
+                                Text="Use the web platform for password changes and other account management options."
+                                FontSize="14"
+                                TextColor="#526579" />
+                        </VerticalStackLayout>
+
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Version -->
+                <Border
+                    Padding="24"
+                    BackgroundColor="White"
+                    Stroke="#e2e8f0"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 12">
+
+                    <VerticalStackLayout Spacing="10">
+
+                        <Label
+                            Text="APP INFORMATION"
+                            FontSize="11"
+                            CharacterSpacing="1.5"
+                            FontAttributes="Bold"
+                            TextColor="#155b91" />
+
+                        <Label
+                            x:Name="VersionLabel"
+                            FontSize="15"
+                            TextColor="#163550" />
+
+                        <Label
+                            Text="Developed as an educational project."
+                            FontSize="14"
+                            TextColor="#526579" />
+
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </Grid>
+    </ScrollView>
+</ContentPage>
