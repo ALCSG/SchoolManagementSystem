@@ -39,10 +39,14 @@
             Details
         </a>
 
-        <a href="${GradesUrl}"
-            class="btn btn-sm btn-outline-success">
-            Grades & Absences
-        </a>
+        @if (User.IsInRole("Employee"))
+        {
+                <a href="${GradesUrl}"
+           class="btn btn-sm btn-outline-success">
+                    Grades & Absences
+            </a>
+        }
+        
 
         @if (User.IsInRole("Admin"))
         {
