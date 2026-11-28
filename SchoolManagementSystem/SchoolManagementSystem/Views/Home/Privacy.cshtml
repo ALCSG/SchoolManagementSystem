@@ -1,6 +1,116 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+
+        <h1 class="h3 mb-1">Privacy Policy</h1>
+        <p class="text-muted">Last updated: November 2026</p>
+
+        <p>
+            This page explains what personal data the School Management System collects, why we need it,
+            who can see it and what rights you have over it.
+        </p>
+
+        <h2 class="h5 mt-4">1. Who is responsible for your data</h2>
+        <p>
+            [School name], [address]. For any question about your data, contact us at
+            <a href="mailto:privacy@yourschool.example">privacy@yourschool.example</a>.
+        </p>
+
+        <h2 class="h5 mt-4">2. What data we collect</h2>
+        <ul>
+            <li><strong>Account data:</strong> first name, last name, e-mail address (used to sign in) and, optionally, a phone number and a profile picture.</li>
+            <li><strong>Password:</strong> we never store your password. We only keep a one-way hash that cannot be turned back into the original.</li>
+            <li><strong>Student records:</strong> a student photo, the class group, the subjects a student is enrolled in, final grades and absence counts.</li>
+            <li><strong>Reports:</strong> the problems that staff report to the administrator, with the name of who reported them and the date.</li>
+            <li><strong>Technical data:</strong> the cookies listed in section 6.</li>
+        </ul>
+        <p>
+            Visitors who are not signed in do not give us any personal data. They can only browse the courses,
+            class groups and subjects that the school offers.
+        </p>
+
+        <h2 class="h5 mt-4">3. Why we use it</h2>
+        <ul>
+            <li>To create and manage accounts, and to let you sign in.</li>
+            <li>To manage courses, class groups, enrolments, grades and absences.</li>
+            <li>To send you e-mails that are needed for your account, such as the link to choose or reset your password.</li>
+            <li>To keep the platform working and secure.</li>
+        </ul>
+        <p>We do not sell your data, and we do not use it for advertising.</p>
+
+        <h2 class="h5 mt-4">4. Who can see your data</h2>
+        <ul>
+            <li><strong>Administrators</strong> create and manage user accounts and see the problems reported by staff.</li>
+            <li><strong>Employees</strong> manage courses, subjects, class groups, students, enrolments and grades.</li>
+            <li><strong>Students</strong> can see and edit their own profile and consult their own grades.</li>
+        </ul>
+        <p>
+            Some of our service providers process data on our behalf, such as the hosting provider and the e-mail
+            service used to send account messages. They only receive what is needed for that task.
+        </p>
+
+        <h2 class="h5 mt-4">5. How long we keep it</h2>
+        <p>
+            [Define the retention period, for example: account and student data are kept while the student is
+            enrolled and for the period required by law afterwards.]
+        </p>
+
+        <h2 class="h5 mt-4">6. Cookies</h2>
+        <p>
+            We only use the cookies that the site needs to work. We do not use analytics or advertising cookies.
+        </p>
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Cookie</th>
+                        <th>Purpose</th>
+                        <th>Duration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>.AspNetCore.Identity.Application</code></td>
+                        <td>Keeps you signed in.</td>
+                        <td>Until you close the browser, or for a limited period if you choose "Remember me".</td>
+                    </tr>
+                    <tr>
+                        <td><code>.AspNetCore.Antiforgery.*</code></td>
+                        <td>Protects forms against forged requests.</td>
+                        <td>Browser session.</td>
+                    </tr>
+                    <tr>
+                        <td><code>.AspNetCore.Mvc.CookieTempDataProvider</code></td>
+                        <td>Carries short confirmation messages between pages.</td>
+                        <td>Until the message is shown.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2 class="h5 mt-4">7. How we protect it</h2>
+        <ul>
+            <li>The site is served over HTTPS.</li>
+            <li>Passwords are stored as hashes, and new accounts choose their own password through a time-limited link sent by e-mail.</li>
+            <li>Access to each page depends on the role of the signed-in user.</li>
+        </ul>
+
+        <h2 class="h5 mt-4">8. Your rights</h2>
+        <p>
+            Under the General Data Protection Regulation (GDPR) you can ask to access your data, correct it, have it
+            erased, restrict or object to its use, and receive a copy of it. You can edit part of your information on
+            your profile page. For anything else, write to the address in section 1.
+        </p>
+        <p>
+            If you think your data is not being handled properly, you can also complain to the Portuguese data
+            protection authority, the CNPD (<a href="https://www.cnpd.pt" target="_blank" rel="noopener">cnpd.pt</a>).
+        </p>
+
+        <h2 class="h5 mt-4">9. Changes to this policy</h2>
+        <p>If we change this policy, we update the date at the top of this page.</p>
+
+    </div>
+</div>
