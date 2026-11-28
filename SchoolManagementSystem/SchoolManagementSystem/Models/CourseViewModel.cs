@@ -11,6 +11,10 @@ namespace SchoolManagementSystem.Models
         [Display(Name = "Course Name")]
         public string Name { get; set; }
 
+        [MaxLength(1000)]
+        [Display(Name = "Description")]
+        public string? Description { get; set; }
+
         [Display(Name = "Subjects")]
         public List<int> SelectedSubjectIds { get; set; } = new();
 

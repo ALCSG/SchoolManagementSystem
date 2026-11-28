@@ -7,6 +7,11 @@
 <div class="mb-4">
     <h1 class="h3 mb-2">@Model.Name</h1>
 
+    @if (!string.IsNullOrWhiteSpace(Model.Description))
+    {
+        <p class="lead mb-2">@Model.Description</p>
+    }
+
     <p class="text-muted mb-0">
         Explore the subjects and classes associated with this course.
     </p>

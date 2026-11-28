@@ -82,7 +82,8 @@ namespace SchoolManagementSystem.Controllers
             var course = new Course
             {
                 Name = model.Name,
-                Subjects = await _subjectRepository.GetByIdsAsync(model.SelectedSubjectIds)
+                Subjects = await _subjectRepository.GetByIdsAsync(model.SelectedSubjectIds),
+                Description = model.Description
             };
 
             await _courseRepository.AddAsync(course);
@@ -103,6 +104,7 @@ namespace SchoolManagementSystem.Controllers
                 CourseId = course.CourseId,
                 Name = course.Name,
                 SelectedSubjectIds = course.Subjects.Select(s => s.SubjectId).ToList(),
+                Description = course.Description,
                 Subjects = await GetSubjectsSelectListAsync()
             };
 
@@ -164,6 +166,7 @@ namespace SchoolManagementSystem.Controllers
 
             course.Name = model.Name;
             course.Subjects.Clear();
+            course.Description = model.Description;
 
             foreach (var subject in selectedSubjects)
                 course.Subjects.Add(subject);
